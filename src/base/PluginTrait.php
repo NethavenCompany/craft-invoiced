@@ -4,7 +4,7 @@ namespace nethaven\invoiced\base;
 use nethaven\invoiced\elements\Invoice;
 use nethaven\invoiced\invoiced;
 use nethaven\invoiced\services\InvoiceTemplates;
-use nethaven\invoiced\variables\invoiced as invoicedVariable;
+use nethaven\invoiced\variables\Invoiced as invoicedVariable;
 
 use Craft;
 use craft\web\twig\variables\CraftVariable;
