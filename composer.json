@@ -42,7 +42,7 @@
         "name": "Invoiced",
         "developer": "Nethaven",
         "documentationUrl": "https://github.com/NethavenCompany/invoiced",
-        "class": "nethaven\\invoiced\\Invoiced"
+        "class": "nethaven\\invoiced\\invoiced"
     },
     "scripts": {
         "check-cs": "ecs check --ansi",
