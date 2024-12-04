@@ -1,6 +1,6 @@
 {
     "name": "nethaven/invoiced",
-    "version": "0.0.1",
+    "version": "1.0.0",
     "description": "Easily manually create and manage invoices for your business",
     "type": "craft-plugin",
     "keywords": [
@@ -13,10 +13,10 @@
     "license": "proprietary",
     "support": {
         "email": "support@nethaven.nl",
-        "issues": "https://github.com/vincpinas/invoiced/issues?state=open",
-        "source": "https://github.com/vincpinas/invoiced",
-        "docs": "https://github.com/vincpinas/invoiced",
-        "rss": "https://github.com/vincpinas/invoiced/releases.atom"
+        "issues": "https://github.com/NethavenCompany/invoiced/issues?state=open",
+        "source": "https://github.com/NethavenCompany/invoiced",
+        "docs": "https://github.com/NethavenCompany/invoiced",
+        "rss": "https://github.com/NethavenCompany/invoiced/releases.atom"
     },
     "authors": [
         {
@@ -25,7 +25,7 @@
         }
     ],
     "require": {
-        "php": ">=8.0.2",
+        "php": "8.2",
         "craftcms/cms": "^4.4.0"
     },
     "require-dev": {
@@ -41,8 +41,8 @@
         "handle": "invoiced",
         "name": "Invoiced",
         "developer": "Nethaven",
-        "documentationUrl": "https://github.com/vincpinas/invoiced",
-        "class": "nethaven\\invoiced\\invoiced"
+        "documentationUrl": "https://github.com/NethavenCompany/invoiced",
+        "class": "nethaven\\invoiced\\Invoiced"
     },
     "scripts": {
         "check-cs": "ecs check --ansi",
@@ -52,7 +52,7 @@
     "config": {
         "sort-packages": true,
         "platform": {
-            "php": "8.0.2"
+            "php": "8.2"
         },
         "allow-plugins": {
             "yiisoft/yii2-composer": true,
