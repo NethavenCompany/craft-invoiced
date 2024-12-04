@@ -1,0 +1,22 @@
+{% extends 'invoiced/_layouts/elementindex' %}
+{% set title = craft.invoiced.getPluginName() %}
+
+{% set crumbs = [
+    { label: craft.invoiced.getPluginName(), url: url('invoiced') },
+    { label: 'Invoices', url: url('invoiced/invoices') },
+] %}
+
+{% set elementType = 'nethaven\\invoiced\\elements\\Invoice' %}
+
+{% block actionButton %}
+	<div class="buttons">
+		<a class="btn submit add icon" href="{{ url('invoiced/invoices/new') }}">
+			{{- 'New Invoice' -}}
+		</a>
+	</div>
+{% endblock %}
+
+{% block content %}
+
+{% endblock %}
+

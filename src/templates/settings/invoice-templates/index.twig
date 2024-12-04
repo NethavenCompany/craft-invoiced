@@ -1,0 +1,16 @@
+{% extends 'invoiced/_layouts/settings' %}
+
+{% set crumbs = [
+    { label: craft.invoiced.getPluginName(), url: url('invoiced') },
+    { label: 'Settings', url: url('invoiced/settings') },
+    { label: 'Invoice Templates', url: url('invoiced/settings/invoice-templates') },
+] %}
+
+{% block actionButton %}
+	<a href="{{ url('invoiced/settings/invoice-templates/new') }}" class="btn submit add icon">{{ 'New Template' }}</a>
+{% endblock %}
+
+{% block content %}
+	<div id="invoice-templates-vue-admin-table"></div>
+{% endblock %}
+

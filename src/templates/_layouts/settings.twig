@@ -1,0 +1,26 @@
+{% extends 'invoiced/_layouts' %}
+
+{% import '_includes/forms' as forms %}
+
+{% set selectedSubnavItem = 'settings' %}
+{% set selectedTab = selectedTab ?? craft.app.request.getSegment(3) ?? 'invoices' %}
+
+{% block sidebar %}
+	<nav class="invoiced-settings-tabs">
+		<ul>
+			{% for handle, item in craft.invoiced.getSettingsNavItems() %}
+				{% if item.heading is defined %}
+					<li class="heading">
+						<span>{{ item.heading }}</span>
+					</li>
+				{% else %}
+					<li>
+						<a href="{{ url('invoiced/settings/' ~ handle) }}" {% if handle == selectedTab %} class="sel" {% endif %}>
+							{{ item.title }}
+						</a>
+					</li>
+				{% endif %}
+			{% endfor %}
+		</ul>
+	</nav>
+{% endblock %}

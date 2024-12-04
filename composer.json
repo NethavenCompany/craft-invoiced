@@ -1,0 +1,63 @@
+{
+    "name": "nethaven/invoiced",
+    "version": "0.0.1",
+    "description": "Easily manually create and manage invoices for your business",
+    "type": "craft-plugin",
+    "keywords": [
+        "craft",
+        "cms",
+        "craftcms",
+        "craft-plugin",
+        "invoice manager"
+    ],
+    "license": "proprietary",
+    "support": {
+        "email": "support@nethaven.nl",
+        "issues": "https://github.com/vincpinas/invoiced/issues?state=open",
+        "source": "https://github.com/vincpinas/invoiced",
+        "docs": "https://github.com/vincpinas/invoiced",
+        "rss": "https://github.com/vincpinas/invoiced/releases.atom"
+    },
+    "authors": [
+        {
+            "name": "Nethaven",
+            "homepage": "https://nethaven.nl"
+        }
+    ],
+    "require": {
+        "php": ">=8.0.2",
+        "craftcms/cms": "^4.4.0"
+    },
+    "require-dev": {
+        "craftcms/ecs": "dev-main",
+        "craftcms/phpstan": "dev-main"
+    },
+    "autoload": {
+        "psr-4": {
+            "nethaven\\invoiced\\": "src/"
+        }
+    },
+    "extra": {
+        "handle": "invoiced",
+        "name": "Invoiced",
+        "developer": "Nethaven",
+        "documentationUrl": "https://github.com/vincpinas/invoiced",
+        "class": "nethaven\\invoiced\\invoiced"
+    },
+    "scripts": {
+        "check-cs": "ecs check --ansi",
+        "fix-cs": "ecs check --ansi --fix",
+        "phpstan": "phpstan --memory-limit=1G"
+    },
+    "config": {
+        "sort-packages": true,
+        "platform": {
+            "php": "8.0.2"
+        },
+        "allow-plugins": {
+            "yiisoft/yii2-composer": true,
+            "craftcms/plugin-installer": true
+        }
+    }
+}
+

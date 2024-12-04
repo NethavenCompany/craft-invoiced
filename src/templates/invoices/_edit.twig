@@ -1,0 +1,15 @@
+{% extends 'invoiced/_layouts/elementindex' %}
+{% set title = craft.invoiced.getPluginName() %}
+
+{% set crumbs = [
+    { label: craft.invoiced.getPluginName(), url: url('invoiced') },
+    { label: 'Invoices', url: url('invoiced/invoices') },
+    { label: 'New Invoice', url: url('invoiced/invoices/new') },
+] %}
+
+{% set elementType = 'nethaven\\invoiced\\elements\\Invoice' %}
+
+{% block content %}
+
+{% endblock %}
+
