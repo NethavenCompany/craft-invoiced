@@ -1,9 +1,8 @@
 <?php
 namespace nethaven\invoiced\base;
 
-use nethaven\invoiced\elements\Invoice;
+
 use nethaven\invoiced\invoiced;
-use nethaven\invoiced\services\InvoiceTemplates;
 use nethaven\invoiced\variables\Invoiced as invoicedVariable;
 
 use Craft;
@@ -36,30 +35,8 @@ trait PluginTrait
         Craft::getLogger()->log($message, Logger::LEVEL_ERROR, 'invoiced');
     }
 
-
-    // Public Methods
-    // =========================================================================
-
-    public function getInvoiceTemplates(): InvoiceTemplates
-    {
-        return $this->get('invoiceTemplates');
-    }
-
-    public function getInvoices(): Invoice
-    {
-        return $this->get('invoices');
-    }
-
-
     // Private Methods
     // =========================================================================
-
-    private function _registerComponents(): void
-    {
-        $this->setComponents([
-            'invoiceTemplates' => InvoiceTemplates::class,
-        ]);
-    }
 
     private function _registerVariables(): void
     {

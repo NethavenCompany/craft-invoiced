@@ -19,22 +19,6 @@ class Invoiced
         return InvoicedPlugin::$plugin->getInvoiceTemplates()->getAllTemplates();
     }
 
-    // /**
-    //  * @param null $criteria
-    //  * @return InvoiceQuery
-    //  */
-    // public function invoices($criteria = null): InvoiceQuery
-    // {
-    //     $query = Invoice::find();
-
-    //     if ($criteria) {
-    //         Craft::configure($query, $criteria);
-    //     }
-
-    //     /* @var FormQuery $query */
-    //     return $query;
-    // }
-
     /**
      * Returns plugin class.
      * @return InvoicedPlugin

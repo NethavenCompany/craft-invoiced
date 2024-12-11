@@ -9,11 +9,6 @@ class Settings extends Model
     // =========================================================================
 
     public string $pluginName = 'Invoiced';
-
-
-    // Invoices
-    // =========================================================================
-
     public string $defaultInvoiceTemplate = '';
 
 
@@ -22,9 +17,7 @@ class Settings extends Model
 
     public function __construct($config = [])
     {
-        // Remove deprecated settings
         unset($config['enableGatsbyCompatibility']);
-
         parent::__construct($config);
     }
 

@@ -4,11 +4,14 @@ namespace nethaven\invoiced;
 use Craft;
 use craft\base\Plugin;
 use craft\base\Event as Event;
-use craft\web\twig\variables\CraftVariable;
+use craft\events\RegisterUrlRulesEvent;
+use craft\web\UrlManager;
 
 use nethaven\invoiced\base\PluginTrait;
 use nethaven\invoiced\base\Routes;
 use nethaven\invoiced\models\Settings;
+use nethaven\invoiced\services\InvoiceTemplates;
+use nethaven\invoiced\services\Invoices;
 
 
 class Invoiced extends Plugin
@@ -18,7 +21,7 @@ class Invoiced extends Plugin
 
     public static Invoiced $plugin;
     public bool $hasCpSection = true;
-    public string $schemaVersion = 'dev-main';
+    public string $schemaVersion = '1.0.0';
     public string $pluginName = "Invoiced";
 
 
@@ -26,7 +29,6 @@ class Invoiced extends Plugin
     // =========================================================================
 
     use PluginTrait;
-    use Routes;
 
 
     // Initialize
@@ -36,7 +38,8 @@ class Invoiced extends Plugin
     {
         return [
             'components' => [
-
+                'invoiceTemplates' => InvoiceTemplates::class,
+                'invoices' => Invoices::class,
             ],
         ];
     }
@@ -49,23 +52,24 @@ class Invoiced extends Plugin
 
         Craft::$app->onInit(function () {
             $this->_registerVariables();
-            $this->_registerComponents();
             $this->_registerCpRoutes();
         });
         
     }
 
 
-    // Protected / Private Methods
-    // =========================================================================
-
-    protected function createSettingsModel(): Settings
-    {
-        return new Settings();
-    }
-
     // Public Methods
     // =========================================================================
+
+    public function getInvoiceTemplates(): InvoiceTemplates
+    {
+        return $this->get('invoiceTemplates');
+    }
+
+    public function getInvoices(): Invoices
+    {
+        return $this->get('invoices');
+    }
 
     public function getCpNavItem(): ?array
     {
@@ -89,5 +93,33 @@ class Invoiced extends Plugin
     public function getPluginName(): string
     {
         return Invoiced::$plugin->getSettings()->pluginName;
+    }
+
+
+    // Protected / Private Methods
+    // =========================================================================
+
+    public function _registerCpRoutes(): void
+    {
+        Event::on(
+            UrlManager::class,
+            UrlManager::EVENT_REGISTER_CP_URL_RULES,
+            function (RegisterUrlRulesEvent $event) {
+                $event->rules['invoiced'] = ['template' =>'invoiced/index'];
+                $event->rules['invoiced/invoices'] = [ 'template' => 'invoiced/invoices'];
+                $event->rules['invoiced/invoices/new'] = [ 'template' => 'invoiced/invoices/_edit'];
+
+                $event->rules['invoiced/settings/invoice-templates/new'] = [ 'template' => 'invoiced/settings/invoice-templates/_edit'];
+                $event->rules['invoiced/settings/invoice-templates/edit/<id:\d+>'] = [ 'template' => 'invoiced/settings/invoice-templates/_edit'];
+
+                $event->rules['invoiced/invoice-template/save-template'] = 'invoiced/invoice-template/save';
+                $event->rules['invoiced/invoice-template/save-template/<id:\d+>'] = 'invoiced/invoice-template/edit';
+            }
+        );
+    }
+
+    protected function createSettingsModel(): Settings
+    {
+        return new Settings();
     }
 }

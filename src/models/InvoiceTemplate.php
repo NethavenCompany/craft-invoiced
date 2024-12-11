@@ -3,14 +3,15 @@ namespace nethaven\invoiced\models;
 
 use craft\helpers\UrlHelper;
 
-use nethaven\invoiced\records\InvoiceTemplate as InvoiceTemplateRecord;
+use nethaven\invoiced\records\InvoiceTemplate as TemplateRecord;
 
 class InvoiceTemplate extends BaseTemplate
 {
     // Properties
     // =========================================================================
 
-    public bool $hasSingleTemplate = true;
+    public ?string $html = null;
+    public ?string $css = null;
 
 
     // Public Methods
@@ -22,27 +23,16 @@ class InvoiceTemplate extends BaseTemplate
     public function defineRules(): array
     {
         $rules = parent::defineRules();
-
         $rules[] = ['template', 'required'];
 
         return $rules;
     }
 
-    /**
-     * Returns the CP URL for editing the template.
-     *
-     * @return string
-     */
     public function getCpEditUrl(): string
     {
         return UrlHelper::cpUrl('invoiced/settings/invoice-templates/edit/' . $this->id);
     }
 
-    /**
-     * Returns the template’s config.
-     *
-     * @return array
-     */
     public function getConfig(): array
     {
         return [
@@ -55,6 +45,6 @@ class InvoiceTemplate extends BaseTemplate
 
     protected function getRecordClass(): string
     {
-        return InvoiceTemplateRecord::class;
+        return TemplateRecord::class;
     }
 }
