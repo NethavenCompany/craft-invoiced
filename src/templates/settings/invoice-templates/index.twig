@@ -10,17 +10,17 @@
 	<a href="{{ url('invoiced/settings/invoice-templates/new') }}" class="btn submit add icon">{{ 'New Template' }}</a>
 {% endblock %}
 
+{% set templates = craft.invoiced.getInvoiceTemplates() %}
+
 {% block content %}
 
-    {% set templates = craft.invoiced.getInvoiceTemplates() %}
-    
     {% if templates|length %}
+    
         <table class="data fullwidth">
             <thead>
                 <tr>
                     <th>Name</th>
                     <th>Handle</th>
-                    <th>Template</th>
                     <th></th>
                 </tr>
             </thead>
@@ -31,7 +31,6 @@
                             <a href="{{ url('invoiced/settings/invoice-templates/edit/' ~ template.id) }}">{{ template.name }}</a>
                         </td>
                         <td><code>{{ template.handle }}</code></td>
-                        <td>{{ template.template }}</td>
                         <td class="thin">
                             <a class="delete icon" title="Delete" role="button"></a>
                         </td>

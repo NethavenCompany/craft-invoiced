@@ -5,13 +5,15 @@ use Craft;
 use craft\base\Plugin;
 use craft\base\Event as Event;
 use craft\events\RegisterUrlRulesEvent;
+use craft\services\ProjectConfig;
 use craft\web\UrlManager;
+use craft\events\RebuildConfigEvent;
 
 use nethaven\invoiced\base\PluginTrait;
-use nethaven\invoiced\base\Routes;
+use nethaven\invoiced\base\ProjectConfigHelper;
 use nethaven\invoiced\models\Settings;
-use nethaven\invoiced\services\InvoiceTemplates;
-use nethaven\invoiced\services\Invoices;
+use nethaven\invoiced\services\Invoices as InvoicesService;
+use nethaven\invoiced\services\InvoiceTemplates as TemplatesService;
 
 
 class Invoiced extends Plugin
@@ -38,8 +40,8 @@ class Invoiced extends Plugin
     {
         return [
             'components' => [
-                'invoiceTemplates' => InvoiceTemplates::class,
-                'invoices' => Invoices::class,
+                'invoiceTemplates' => TemplatesService::class,
+                'invoices' => InvoicesService::class,
             ],
         ];
     }
@@ -53,6 +55,7 @@ class Invoiced extends Plugin
         Craft::$app->onInit(function () {
             $this->_registerVariables();
             $this->_registerCpRoutes();
+            $this->_registerProjectConfigEventHandlers();
         });
         
     }
@@ -61,12 +64,12 @@ class Invoiced extends Plugin
     // Public Methods
     // =========================================================================
 
-    public function getInvoiceTemplates(): InvoiceTemplates
+    public function getInvoiceTemplates(): TemplatesService
     {
         return $this->get('invoiceTemplates');
     }
 
-    public function getInvoices(): Invoices
+    public function getInvoices(): InvoicesService
     {
         return $this->get('invoices');
     }
@@ -99,7 +102,7 @@ class Invoiced extends Plugin
     // Protected / Private Methods
     // =========================================================================
 
-    public function _registerCpRoutes(): void
+    private function _registerCpRoutes(): void
     {
         Event::on(
             UrlManager::class,
@@ -112,10 +115,25 @@ class Invoiced extends Plugin
                 $event->rules['invoiced/settings/invoice-templates/new'] = [ 'template' => 'invoiced/settings/invoice-templates/_edit'];
                 $event->rules['invoiced/settings/invoice-templates/edit/<id:\d+>'] = [ 'template' => 'invoiced/settings/invoice-templates/_edit'];
 
-                $event->rules['invoiced/invoice-template/save-template'] = 'invoiced/invoice-template/save';
-                $event->rules['invoiced/invoice-template/save-template/<id:\d+>'] = 'invoiced/invoice-template/edit';
+                $event->rules['invoiced/invoice-templates/save'] = 'invoiced/invoice-template/save';
             }
         );
+    }
+
+    private function _registerProjectConfigEventHandlers(): void
+    {
+        $projectConfigService = Craft::$app->getProjectConfig();
+        $invoiceTemplatesService = $this->getInvoiceTemplates();
+
+        $projectConfigService
+            ->onAdd(TemplatesService::CONFIG_TEMPLATES_KEY . '.{uid}', [$invoiceTemplatesService, 'handleChangedTemplate'])
+            ->onUpdate(TemplatesService::CONFIG_TEMPLATES_KEY . '.{uid}', [$invoiceTemplatesService, 'handleChangedTemplate'])
+            ->onRemove(TemplatesService::CONFIG_TEMPLATES_KEY . '.{uid}', [$invoiceTemplatesService, 'handleDeletedTemplate']);
+
+
+        Event::on(ProjectConfig::class, ProjectConfig::EVENT_REBUILD, function(RebuildConfigEvent $event) {
+            $event->config['invoiced'] = ProjectConfigHelper::rebuildProjectConfig();
+        });
     }
 
     protected function createSettingsModel(): Settings

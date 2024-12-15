@@ -23,7 +23,6 @@ class InvoiceTemplate extends BaseTemplate
     public function defineRules(): array
     {
         $rules = parent::defineRules();
-        $rules[] = ['template', 'required'];
 
         return $rules;
     }
@@ -38,7 +37,8 @@ class InvoiceTemplate extends BaseTemplate
         return [
             'name' => $this->name,
             'handle' => $this->handle,
-            'template' => $this->template,
+            'html' => $this->html,
+            'css' => $this->css,
             'sortOrder' => $this->sortOrder,
         ];
     }

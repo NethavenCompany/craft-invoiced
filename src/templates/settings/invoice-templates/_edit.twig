@@ -41,13 +41,13 @@
 
 {% block content %}
     <div id="invoice-template-editor">
-        <form method="post" action="{{ url('invoiced/invoice-template/save-template/') }}">
+        <form method="post" action="{{ url('invoiced/invoice-templates/save') }}">
             {{ csrfInput() }}
             {{ redirectInput('invoiced/settings/invoice-templates') }}
 
-            {% if templateId %}
-                <input type="hidden" name="id" value="{{ templateId }}">
-                <input type="hidden" name="sortOrder" value="{{ sortOrder }}">
+            {% if template %}
+                <input type="hidden" name="id" value="{{ template.id }}">
+                <input type="hidden" name="sortOrder" value="{{ template.sortOrder }}">
             {% endif %}
             
             <div class="field">
@@ -83,7 +83,7 @@
                         instructions: "Enter your HTML here.",
                         id: 'templateHtml',
                         name: 'templateHtml',
-                        value: template.template ?? '<style>\n</style>\n<body>\n</body>',
+                        value: template.html ?? '<style>\n</style>\n<body>\n</body>',
                         rows: 15,
                         required: true
                     }, 'CodeField', monacoOptions, codeEditorOptions) }}

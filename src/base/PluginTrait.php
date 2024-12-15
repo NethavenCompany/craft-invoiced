@@ -24,15 +24,13 @@ trait PluginTrait
     // Static Methods
     // =========================================================================
 
-    public static function log(string $message, array $params = []): void
+    public static function log(string $message, bool $error = false): void
     {
-        Craft::getLogger()->log($message, Logger::LEVEL_INFO, 'invoiced');
-    }
-
-    public static function error(string $message, array $params = []): void
-    {
-
-        Craft::getLogger()->log($message, Logger::LEVEL_ERROR, 'invoiced');
+        if ($error) {
+            Craft::getLogger()->log($message, Logger::LEVEL_ERROR, 'invoiced');
+        } else {
+            Craft::getLogger()->log($message, Logger::LEVEL_INFO, 'invoiced');
+        }
     }
 
     // Private Methods
