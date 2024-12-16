@@ -39,4 +39,17 @@ class InvoiceTemplateController extends Controller
         
         $this->redirect('invoiced/settings/invoice-templates');
     }
+
+    public function actionDelete(): Response
+    {
+        $this->requireAcceptsJson();
+
+        $templateId = $this->request->getRequiredParam('id');
+
+        if (Invoiced::$plugin->getInvoiceTemplates()->deleteTemplateById($templateId)) {
+            return $this->asJson(['success' => true]);
+        }
+
+        return $this->asJson(['error' => Craft::t('invoiced', 'Couldn’t archive template.')]);
+    }
 }

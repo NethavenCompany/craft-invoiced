@@ -16,9 +16,9 @@ trait PluginTrait
     // =========================================================================
 
     /**
-     * @var invoiced
+     * @var Invoiced
      */
-    public static invoiced $plugin;
+    public static Invoiced $plugin;
 
 
     // Static Methods

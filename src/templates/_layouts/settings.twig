@@ -2,6 +2,8 @@
 
 {% import '_includes/forms' as forms %}
 
+{% do view.registerAssetBundle('craft\\web\\assets\\admintable\\AdminTableAsset') -%}
+
 {% set selectedSubnavItem = 'settings' %}
 {% set selectedTab = selectedTab ?? craft.app.request.getSegment(3) ?? 'invoices' %}
 

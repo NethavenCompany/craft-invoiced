@@ -32,6 +32,11 @@ class InvoiceTemplate extends BaseTemplate
         return UrlHelper::cpUrl('invoiced/settings/invoice-templates/edit/' . $this->id);
     }
 
+    public function canDelete(): bool
+    {
+        return true;
+    }
+
     public function getConfig(): array
     {
         return [

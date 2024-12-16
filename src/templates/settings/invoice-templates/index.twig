@@ -10,35 +10,46 @@
 	<a href="{{ url('invoiced/settings/invoice-templates/new') }}" class="btn submit add icon">{{ 'New Template' }}</a>
 {% endblock %}
 
-{% set templates = craft.invoiced.getInvoiceTemplates() %}
+{% set invoiceTemplates = craft.invoiced.getInvoiceTemplates() %}
 
 {% block content %}
-
-    {% if templates|length %}
-    
-        <table class="data fullwidth">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Handle</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for template in templates %}
-                    <tr>
-                        <td>
-                            <a href="{{ url('invoiced/settings/invoice-templates/edit/' ~ template.id) }}">{{ template.name }}</a>
-                        </td>
-                        <td><code>{{ template.handle }}</code></td>
-                        <td class="thin">
-                            <a class="delete icon" title="Delete" role="button"></a>
-                        </td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    {% else %}
-        <p class="light">No invoice templates exist yet.</p>
-    {% endif %}
+    <div id="invoice-templates-vue-admin-table"></div>
 {% endblock %}
+
+{% set tableData = [] %}
+{% for template in invoiceTemplates %}
+    {% set tableData = tableData | merge([{
+        id: template.id,
+        labelHtml: {
+            url: template.getCpEditUrl(),
+            html: template.name,
+        },
+        title: template.name | t('invoiced'),
+        url: template.getCpEditUrl(),
+        handle: template.handle | e,
+        _showDelete: template.canDelete(),
+    }]) %}
+{% endfor %}
+
+{% js %}
+    var columns = [
+        {
+            name: 'labelHtml',
+            title: Craft.t('app', 'Name'),
+            callback: function(value) {
+                return '<a class="cell-bold" href="' + value.url + '">' + value.html + '</a>';
+            }
+        },
+        { name: '__slot:handle', title: Craft.t('app', 'Handle') }
+    ];
+
+    new Craft.VueAdminTable({
+        columns: columns,
+        container: '#invoice-templates-vue-admin-table',
+        deleteAction: 'invoiced/invoice-template/delete',
+        reorderAction: 'invoiced/invoice-template/reorder',
+        reorderSuccessMessage: Craft.t('invoiced', 'Templates reordered.'),
+        reorderFailMessage: Craft.t('invoiced', 'Couldn’t reorder templates.'),
+        tableData: {{ tableData | json_encode | raw }},
+    });
+{% endjs %}

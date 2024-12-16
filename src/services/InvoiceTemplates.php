@@ -117,28 +117,82 @@ class InvoiceTemplates extends Component
             $templateRecord->css = $data['css'];
             $templateRecord->sortOrder = $data['sortOrder'];
             $templateRecord->uid = $templateUid;
-
-            // if (!empty($data['fieldLayouts'])) {
-            //     // Save the field layout
-            //     $layout = FieldLayout::createFromConfig(reset($data['fieldLayouts']));
-            //     $layout->id = $templateRecord->fieldLayoutId;
-            //     $layout->type = Invoice::class;
-            //     $layout->uid = key($data['fieldLayouts']);
-                
-            //     Craft::$app->getFields()->saveLayout($layout, false);
-                
-            //     $templateRecord->fieldLayoutId = $layout->id;
-            // } else if ($templateRecord->fieldLayoutId) {
-            //     // Delete the main field layout
-            //     Craft::$app->getFields()->deleteLayoutById($templateRecord->fieldLayoutId);
-            //     $templateRecord->fieldLayoutId = null;
-            // }
-
+            
             if ($wasTrashed = (bool)$templateRecord->dateDeleted) {
                 $templateRecord->restore();
             } else {
                 $templateRecord->save(false);
             }
+
+            $transaction->commit();
+
+            $this->_createTwigTemplate($templateRecord->handle, $templateRecord->html);
+        } catch (Throwable $e) {
+            $transaction->rollBack();
+            throw $e;
+        }
+        
+        // Clear caches
+        $this->_templates = null;
+        
+        // Fire an 'afterSaveFormTemplate' event
+        if ($this->hasEventHandlers(self::EVENT_AFTER_SAVE_INVOICE_TEMPLATE)) {
+            $this->trigger(self::EVENT_AFTER_SAVE_INVOICE_TEMPLATE, new InvoiceTemplateEvent([
+                'template' => $this->getTemplateById($templateRecord->id),
+                'isNew' => $isNewTemplate,
+            ]));
+        }
+    }
+
+    public function deleteTemplate(TemplateModel $template): bool
+    {
+        if ($this->hasEventHandlers(self::EVENT_BEFORE_DELETE_INVOICE_TEMPLATE)) {
+            $this->trigger(self::EVENT_BEFORE_DELETE_INVOICE_TEMPLATE, new InvoiceTemplateEvent([
+                'template' => $template,
+            ]));
+        }
+
+        Craft::$app->getProjectConfig()->remove(self::CONFIG_TEMPLATES_KEY . '.' . $template->uid, "Delete form template “{$template->handle}”");
+
+        return true;
+    }
+
+    public function deleteTemplateById(int $id): bool
+    {
+        $template = $this->getTemplateById($id);
+
+        if (!$template) {
+            return false;
+        }
+
+        return $this->deleteTemplate($template);
+    }
+
+    public function handleDeletedTemplate(ConfigEvent $event): void
+    {
+        $uid = $event->tokenMatches[0];
+        $templateRecord = $this->_getTemplateRecord($uid);
+
+        if ($templateRecord->getIsNewRecord()) {
+            return;
+        }
+
+        $template = $this->getTemplateById($templateRecord->id);
+
+        // Fire a 'beforeApplyInvoiceTemplateDelete' event
+        if ($this->hasEventHandlers(self::EVENT_BEFORE_APPLY_INVOICE_TEMPLATE_DELETE)) {
+            $this->trigger(self::EVENT_BEFORE_APPLY_INVOICE_TEMPLATE_DELETE, new InvoiceTemplateEvent([
+                'template' => $template,
+            ]));
+        }
+
+        $this->_deleteTwigTemplate($templateRecord->handle);
+        
+        $transaction = Craft::$app->getDb()->beginTransaction();
+        try {
+            Craft::$app->getDb()->createCommand()
+                ->softDelete(Table::INVOICE_TEMPLATES, ['id' => $templateRecord->id])
+                ->execute();
 
             $transaction->commit();
         } catch (Throwable $e) {
@@ -149,19 +203,38 @@ class InvoiceTemplates extends Component
         // Clear caches
         $this->_templates = null;
 
-        // Fire an 'afterSaveFormTemplate' event
-        if ($this->hasEventHandlers(self::EVENT_AFTER_SAVE_INVOICE_TEMPLATE)) {
-            $this->trigger(self::EVENT_AFTER_SAVE_INVOICE_TEMPLATE, new InvoiceTemplateEvent([
-                'template' => $this->getTemplateById($templateRecord->id),
-                'isNew' => $isNewTemplate,
+        // Fire an 'afterDeleteInvoiceTemplate' event
+        if ($this->hasEventHandlers(self::EVENT_AFTER_DELETE_INVOICE_TEMPLATE)) {
+            $this->trigger(self::EVENT_AFTER_DELETE_INVOICE_TEMPLATE, new InvoiceTemplateEvent([
+                'template' => $template,
             ]));
         }
     }
-
-
-
+    
+    
     // Private Methods
     // =========================================================================
+    private function _createTwigTemplate(string $handle, string $content): bool
+    {
+        $templatePath = Craft::getAlias('@nethaven/invoiced/templates/_invoice-templates/' . $handle . '.twig');
+
+        if(file_put_contents($templatePath, $content)) {
+            return true;
+        }
+        
+        return false;
+    }
+
+    private function _deleteTwigTemplate($handle)
+    {
+        $templatePath = Craft::getAlias('@nethaven/invoiced/templates/_invoice-templates/' . $handle . '.twig');
+
+        if(unlink($templatePath)) {
+            return true;
+        }
+        
+        return false;
+    }
 
     private function _templates() {
         if (!isset($this->_templates)) {
