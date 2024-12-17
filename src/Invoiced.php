@@ -4,11 +4,13 @@ namespace nethaven\invoiced;
 use Craft;
 use craft\base\Plugin;
 use craft\base\Event as Event;
+use craft\events\PluginEvent;
 use craft\events\RegisterUrlRulesEvent;
 use craft\services\ProjectConfig;
 use craft\web\UrlManager;
 use craft\events\RebuildConfigEvent;
-
+use craft\helpers\UrlHelper;
+use craft\services\Plugins;
 use nethaven\invoiced\base\PluginTrait;
 use nethaven\invoiced\base\ProjectConfigHelper;
 use nethaven\invoiced\models\Settings;
@@ -23,6 +25,7 @@ class Invoiced extends Plugin
 
     public static Invoiced $plugin;
     public bool $hasCpSection = true;
+    public bool $hasCpSettings = true;
     public string $schemaVersion = '1.0.0';
     public string $pluginName = "Invoiced";
 
@@ -54,8 +57,12 @@ class Invoiced extends Plugin
 
         Craft::$app->onInit(function () {
             $this->_registerVariables();
-            $this->_registerCpRoutes();
             $this->_registerProjectConfigEventHandlers();
+            $this->_registerEventHandlers();
+
+            if (Craft::$app->getRequest()->getIsCpRequest()) {
+                $this->_registerCpRoutes();
+            }
         });
         
     }
@@ -98,6 +105,11 @@ class Invoiced extends Plugin
         return Invoiced::$plugin->getSettings()->pluginName;
     }
 
+    public function getSettingsResponse(): mixed
+    {
+        return Craft::$app->controller->redirect(UrlHelper::cpUrl('invoiced/settings'));
+    }
+
 
     // Protected / Private Methods
     // =========================================================================
@@ -133,6 +145,14 @@ class Invoiced extends Plugin
 
         Event::on(ProjectConfig::class, ProjectConfig::EVENT_REBUILD, function(RebuildConfigEvent $event) {
             $event->config['invoiced'] = ProjectConfigHelper::rebuildProjectConfig();
+        });
+    }
+
+    private function _registerEventHandlers() {
+        Event::on(Plugins::class, Plugins::EVENT_BEFORE_SAVE_PLUGIN_SETTINGS, function(PluginEvent $event) {
+            if ($event->plugin === $this) {
+                $this->getService()->onBeforeSavePluginSettings($event);
+            }
         });
     }
 

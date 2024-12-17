@@ -18,7 +18,7 @@ class InvoiceTemplateController extends Controller
         return $this->renderTemplate('invoiced/settings/invoice-templates', compact('invoiceTemplates'));
     }
 
-    public function actionSave(): void
+    public function actionSave(): ?Response
     {
         $this->requirePostRequest();
 
@@ -37,7 +37,7 @@ class InvoiceTemplateController extends Controller
             Craft::$app->getSession()->setError('Could not save the template.');
         }
         
-        $this->redirect('invoiced/settings/invoice-templates');
+        return $this->redirect('invoiced/settings/invoice-templates');
     }
 
     public function actionDelete(): Response

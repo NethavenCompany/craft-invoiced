@@ -9,6 +9,7 @@
 ] %}
 
 {% set templates = craft.invoiced.getInvoiceTemplates() %}
+{% set pluginSettings = craft.invoiced.getPluginSettings() %}
 {% set templateOptions = [] %}
 
 {% for template in templates %}
@@ -19,7 +20,8 @@
 
 	<h2>{{ 'General settings' }}</h2>
 
-	<form method="post" action="{{ url('invoiced/settings/save-settings') }}">
+	<form action="" method="post" accept-charset="UTF-8" data-saveshortcut>
+        <input type="hidden" name="action" value="invoiced/settings/save-settings">
 		{{ redirectInput('invoiced/settings/general') }}
 		{{ csrfInput() }}
 
