@@ -58,7 +58,6 @@ class Invoiced extends Plugin
         Craft::$app->onInit(function () {
             $this->_registerVariables();
             $this->_registerProjectConfigEventHandlers();
-            $this->_registerEventHandlers();
 
             if (Craft::$app->getRequest()->getIsCpRequest()) {
                 $this->_registerCpRoutes();
@@ -145,14 +144,6 @@ class Invoiced extends Plugin
 
         Event::on(ProjectConfig::class, ProjectConfig::EVENT_REBUILD, function(RebuildConfigEvent $event) {
             $event->config['invoiced'] = ProjectConfigHelper::rebuildProjectConfig();
-        });
-    }
-
-    private function _registerEventHandlers() {
-        Event::on(Plugins::class, Plugins::EVENT_BEFORE_SAVE_PLUGIN_SETTINGS, function(PluginEvent $event) {
-            if ($event->plugin === $this) {
-                $this->getService()->onBeforeSavePluginSettings($event);
-            }
         });
     }
 

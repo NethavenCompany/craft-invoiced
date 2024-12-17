@@ -5,7 +5,7 @@
 {% set crumbs = [
     { label: craft.invoiced.getPluginName(), url: url('invoiced') },
     { label: 'Settings', url: url('invoiced/settings') },
-    { label: 'Invoices', url: url('invoiced/settings/general') },
+    { label: 'General', url: url('invoiced/settings/general') },
 ] %}
 
 {% set templates = craft.invoiced.getInvoiceTemplates() %}
@@ -33,6 +33,7 @@
                 instructions: 'Select a Invoice Template to be used as the default for all new invoices.',
                 name: 'defaultInvoiceTemplate',
                 options: templateOptions,
+                value: pluginSettings.defaultInvoiceTemplate,
             }) }}
 		{% else %}
         <div class="field">

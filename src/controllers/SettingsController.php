@@ -1,5 +1,5 @@
 <?php
-namespace verbb\invoiced\controllers;
+namespace nethaven\invoiced\controllers;
 
 
 use nethaven\invoiced\Invoiced;
