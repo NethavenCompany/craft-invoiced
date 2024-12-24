@@ -33,7 +33,7 @@ class Invoices extends Component
     public function newInvoiceNumber()
     {
         $currentYear = date('Y');
-        $highestInvoiceNumber = Invoice::find()->where(['like', 'invoiceNumber', $currentYear . '%', false])->orderBy(['invoiceNumber' => SORT_DESC])->one();
+        $highestInvoiceNumber = Invoice::find()->trashed(null)->where(['like', 'invoiceNumber', $currentYear . '%', false])->orderBy(['invoiceNumber' => SORT_DESC])->one();
         $newInvoiceNumber = $highestInvoiceNumber ? (int)substr($highestInvoiceNumber->invoiceNumber, 4) + 1 : 1;
         return $currentYear . sprintf('%04d', $newInvoiceNumber);
     }
