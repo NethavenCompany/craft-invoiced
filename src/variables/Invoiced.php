@@ -53,6 +53,15 @@ class Invoiced
     }
 
     /**
+     * Returns a invoice number suggestion based on current year.
+     * @return string
+     */
+    public function newInvoiceNumber(): string
+    {
+        return invoicedPlugin::$plugin->getInvoices()->newInvoiceNumber();
+    }
+
+    /**
      * @return array
      */
     public function getSettingsNavItems(): array
