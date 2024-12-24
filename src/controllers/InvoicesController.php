@@ -53,7 +53,8 @@ class InvoicesController extends Controller
         }
         
         $invoice->vat = $request->getParam("vat");
-        $invoice->total = $invoice->subTotal * (1 + ($invoice->vat / 100));
+        $invoice->vatAmount = $invoice->subTotal * ($invoice->vat / 100);
+        $invoice->total = $invoice->subTotal + $invoice->vatAmount;
 
         $invoice->phone = $request->getParam("phone");
         $invoice->email = $request->getParam("email");
@@ -73,22 +74,25 @@ class InvoicesController extends Controller
 
         $invoice = new Invoice();
         $invoice->templateId = $this->request->getRequiredParam("templateId");
+        $template = Invoiced::$plugin->getInvoiceTemplates()->getTemplateById($invoice->templateId);
 
         $invoice->invoiceNumber = $this->request->getParam("invoiceNumber");
-        // $invoice->invoiceDate = $this->request->getParam("invoiceDate")["date"];
-        // $invoice->expirationDate = $this->request->getParam("expirationDate")["date"];
+        $invoice->invoiceDate = $this->request->getParam("invoiceDate");
+        $invoice->expirationDate = $this->request->getParam("expirationDate");
 
-        // if (is_array($this->request->getParam("items"))) {
-        //     $invoice->items = $this->request->getParam("items");
-        // } else {
-        //     $invoice->items = [];
-        // }
+        $itemsParam = $this->request->getParam("items");
 
-        // foreach ($invoice->items as $item) {
-        //     $qty = json_decode($item[0]);
-        //     $unitPrice = json_decode($item[1]);
-        //     $invoice->subTotal += ($qty * $unitPrice);
-        // }
+        if (is_array($itemsParam)) {
+            $invoice->items = $itemsParam;
+        } else {
+            $invoice->items = json_decode($itemsParam);
+        }
+
+        foreach ($invoice->items as $item) {
+            $qty = json_decode($item[0]) ?? 0;
+            $unitPrice = json_decode($item[1]) ?? 0;
+            $invoice->subTotal += ($qty * $unitPrice);
+        }
         
         $invoice->vat = $this->request->getParam("vat");
         $invoice->total = $invoice->subTotal * (1 + ($invoice->vat / 100));
@@ -97,7 +101,8 @@ class InvoicesController extends Controller
         $invoice->email = $this->request->getParam("email");
 
         return $this->asJson([
-            'html' => $invoice->getPdfHtml(),
+            'html' => $invoice->getPdfHtml(false),
+            'css' => $template->css
         ]);
     }
 }

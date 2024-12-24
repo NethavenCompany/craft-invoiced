@@ -142,12 +142,17 @@
                     id: 'invoice-items',
                     name: 'items',
                     allowAdd: true,
+                    allowRemove: true,
                     cols: [
                         { type: 'number', min: 1, value: 1, heading: 'Quantity' },
                         { type: 'number', min: 0, step: 0.01, value: 0, heading: 'Unit Price' },
                         { type: 'singleline', heading: 'Description' },
                     ],
-                    rows: []
+                    rows: [
+                        [11, 15, "Webdevelopment"],
+                        [6, 17.50, "Branding"],
+                        [28, 14.50, "Design"],
+                    ]
                 }) }}
             </div>
 

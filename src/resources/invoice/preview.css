@@ -5,13 +5,21 @@
     grid-template-columns: 1fr 1fr 1fr;
 
     form {
-        grid-column: span 2;
+        grid-column: span 1;
     }
+    
+    
 }
 
 #invoice-preview {
+    grid-column: span 2;
     border: 1px solid rgba(96,125,159,.25);
     aspect-ratio: 1/1.414;
     background: #fff;
     position: relative;
+    width: 100%;
+
+    tr, th {
+        width: 10rem !important;
+    }
 }

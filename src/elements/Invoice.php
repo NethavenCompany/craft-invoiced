@@ -36,6 +36,7 @@ class Invoice extends Element
 
     public ?int $subTotal = 0;
     public ?int $vat = 0;
+    public ?int $vatAmount = 0;
     public ?int $total = 0;
     public ?string $phone = '';
     public ?string $email = '';
@@ -275,18 +276,24 @@ class Invoice extends Element
         return Craft::getAlias('@webroot/invoiced/invoices/' . $this->invoiceNumber . '.pdf');
     }
 
-    public function getPdfHtml($invoice = null)
+    public function getPdfHtml($withCss = true)
     {
-        $invoice = $invoice ?? $this;
-        $template = Invoiced::$plugin->getInvoiceTemplates()->getTemplateById($invoice->templateId);
+        $template = Invoiced::$plugin->getInvoiceTemplates()->getTemplateById($this->templateId);
+
+        if (is_string($this->items)) {
+            $this->items = json_decode($this->items, true);
+        }
     
         $html = Craft::$app->getView()->renderTemplate($template->twigPath, [
-            'invoice' => $invoice,
+            'invoice' => $this,
             'template' => $template
         ]);
         
         $cleanHtml = preg_replace('/<!\[CDATA\[(YII-BLOCK-HEAD|YII-BLOCK-BODY-BEGIN|YII-BLOCK-BODY-END)\]\]>/', '', $html);
-        $cleanHtml = $cleanHtml . '<style>' . $template->css . '</style>';
+
+        if($withCss) {
+            $cleanHtml = $cleanHtml . '<style>' . $template->css . '</style>';
+        }
 
         return $cleanHtml;
     }
