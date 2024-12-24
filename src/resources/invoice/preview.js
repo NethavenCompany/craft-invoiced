@@ -46,6 +46,7 @@ class InvoicePreview {
             field.addEventListener("blur", callback);
         }
         if(field.tagName === "TEXTAREA") field.addEventListener("input", callback);
+        if(field.tagName === "SELECT") field.addEventListener("change", callback);
     }
 
     /**
@@ -67,8 +68,6 @@ class InvoicePreview {
                 combinedValues[row][col] = textarea.value;
             }
         });
-
-        console.log(combinedValues)
 
         return combinedValues;
     }
