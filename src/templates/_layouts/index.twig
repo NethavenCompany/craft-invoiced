@@ -4,9 +4,11 @@
 	{% set title = craft.invoiced.getPluginName() %}
 {% endif %}
 
+{% do view.registerAssetBundle("nethaven\\invoiced\\resources\\InvoicedAssets") %}
+
 {% block content %}
 	{% block blockContent %}
-    
+
     {% endblock %}
 
 	<hr>

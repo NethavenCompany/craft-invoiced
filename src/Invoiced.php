@@ -1,21 +1,25 @@
 <?php
 namespace nethaven\invoiced;
 
-use Craft;
-use craft\base\Plugin;
-use craft\base\Event as Event;
-use craft\events\PluginEvent;
-use craft\events\RegisterUrlRulesEvent;
-use craft\services\ProjectConfig;
-use craft\web\UrlManager;
-use craft\events\RebuildConfigEvent;
-use craft\helpers\UrlHelper;
-use craft\services\Plugins;
+
 use nethaven\invoiced\base\PluginTrait;
 use nethaven\invoiced\base\ProjectConfigHelper;
+use nethaven\invoiced\elements\Invoice;
 use nethaven\invoiced\models\Settings;
-use nethaven\invoiced\services\Invoices as InvoicesService;
 use nethaven\invoiced\services\InvoiceTemplates as TemplatesService;
+use nethaven\invoiced\services\Invoices as InvoicesService;
+
+use Craft;
+use craft\base\Event as Event;
+use craft\base\Plugin;
+use craft\events\RebuildConfigEvent;
+use craft\events\RegisterComponentTypesEvent;
+use craft\events\RegisterUrlRulesEvent;
+use craft\helpers\UrlHelper;
+use craft\services\Elements;
+use craft\services\ProjectConfig;
+use craft\web\UrlManager;
+use yii\base\Event as EventAlias;
 
 
 class Invoiced extends Plugin
@@ -26,7 +30,7 @@ class Invoiced extends Plugin
     public static Invoiced $plugin;
     public bool $hasCpSection = true;
     public bool $hasCpSettings = true;
-    public string $schemaVersion = '1.0.0';
+    public string $schemaVersion = '1.1.0';
     public string $pluginName = "Invoiced";
 
 
@@ -64,6 +68,9 @@ class Invoiced extends Plugin
             }
         });
         
+        EventAlias::on(Elements::class, Elements::EVENT_REGISTER_ELEMENT_TYPES, function (RegisterComponentTypesEvent $event) {
+            $event->types[] = Invoice::class;
+        });
     }
 
 
@@ -120,8 +127,12 @@ class Invoiced extends Plugin
             UrlManager::EVENT_REGISTER_CP_URL_RULES,
             function (RegisterUrlRulesEvent $event) {
                 $event->rules['invoiced'] = ['template' =>'invoiced/index'];
+
                 $event->rules['invoiced/invoices'] = [ 'template' => 'invoiced/invoices'];
-                $event->rules['invoiced/invoices/new'] = [ 'template' => 'invoiced/invoices/_edit'];
+                $event->rules['invoiced/invoices/new'] = [ 'template' => 'invoiced/invoices/_new'];
+                $event->rules['invoiced/invoices/edit/<elementId:\\d+>'] = 'invoiced/invoices/_edit';
+                $event->rules['invoiced/invoices/save'] = 'invoiced/invoices/save';
+                $event->rules['invoiced/invoices/preview'] = 'invoiced/invoices/preview';
 
                 $event->rules['invoiced/settings/invoice-templates/new'] = [ 'template' => 'invoiced/settings/invoice-templates/_edit'];
                 $event->rules['invoiced/settings/invoice-templates/edit/<id:\d+>'] = [ 'template' => 'invoiced/settings/invoice-templates/_edit'];
