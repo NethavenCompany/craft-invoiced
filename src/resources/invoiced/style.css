@@ -1,9 +1,16 @@
 .field-row {
+    width: 100%;
     display:grid;
     grid-template-columns:1fr 1fr;
     gap:1rem;
 
     & > * {
         margin: 0 !important;
+    }
+
+    &.-flex {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
     }
 }

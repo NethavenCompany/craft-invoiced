@@ -1,4 +1,4 @@
-{% extends '_layouts/cp' %}
+{% extends 'invoiced/_layouts/index' %}
 
 {% import '_includes/forms' as forms %}
 
@@ -24,6 +24,22 @@
         <form method="post" action="{{ url('invoiced/invoices/save') }}">
             {{ csrfInput() }}
             {{ redirectInput('invoiced/invoices/edit/{id}') }}
+
+            <div class="field">
+                <div class="heading">
+                    <label for="templateId">
+                        Invoice Template
+                    </label>
+                </div>
+
+                {{ forms.selectField({
+                    first: true,
+                    name: 'templateId',
+                    id: 'templateId',
+                    options: templateOptions,
+                    value: pluginSettings.defaultInvoiceTemplate,
+                }) }}
+            </div>
             
             <div class="field">
                 <div class="heading">
@@ -42,51 +58,33 @@
                     required: true,
                 }) }}
             </div>
-            
-            <div class="field">
-                <div class="heading">
-                    <label for="templateId">
-                        Invoice Template
-                    </label>
-                </div>
 
-                {{ forms.selectField({
-                    first: true,
-                    name: 'templateId',
-                    id: 'templateId',
-                    options: templateOptions,
-                    value: pluginSettings.defaultInvoiceTemplate,
-                }) }}
-            </div>
-
+            <span class="field-row -flex">
                 <div class="field">
                     <div class="heading">
                         <label for="invoiceDate">
                             Invoice Date
                         </label>
                     </div>
-
                     {{ forms.date({
                         name: 'invoiceDate',
                         id: 'invoiceDate',
                         value: date() | date("Y/m/d")
                     }) }}
                 </div>
-
                 <div class="field">
                     <div class="heading">
                         <label for="expirationDate">
                             Expiration Date
                         </label>
                     </div>
-
                     {{ forms.date({
                         name: 'expirationDate',
                         id: 'expirationDate',
                         value: date() | date_modify("+1 month") | date("Y/m/d")
                     }) }}
                 </div>
-
+            </span>
 
             <div class="field">
                 <div class="heading">
