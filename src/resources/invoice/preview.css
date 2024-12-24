@@ -1,0 +1,17 @@
+#invoice-editor {
+    display: grid;
+    gap: 2rem;
+
+    grid-template-columns: 1fr 1fr 1fr;
+
+    form {
+        grid-column: span 2;
+    }
+}
+
+#invoice-preview {
+    border: 1px solid rgba(96,125,159,.25);
+    aspect-ratio: 1/1.414;
+    background: #fff;
+    position: relative;
+}

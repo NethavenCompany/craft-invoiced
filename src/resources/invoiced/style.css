@@ -1,0 +1,9 @@
+.field-row {
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:1rem;
+
+    & > * {
+        margin: 0 !important;
+    }
+}
