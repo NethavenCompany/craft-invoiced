@@ -53,6 +53,11 @@ class InvoiceTemplates extends Component
         return $this->_templates()->firstWhere('handle', $handle, true);
     }
 
+    public function getTwigPath($handle)
+    {
+        return Craft::getAlias('@nethaven/invoiced/templates/_invoice-templates/' . $handle . '.twig');
+    }
+
     public function saveTemplate(TemplateModel $template, bool $runValidation = true): bool
     {
         $isNewTemplate = !(bool)$template->id;
@@ -142,6 +147,11 @@ class InvoiceTemplates extends Component
                 'isNew' => $isNewTemplate,
             ]));
         }
+
+        $invoicesWithTemplate = Invoiced::$plugin->getInvoices()->getInvoicesByTemplate($templateRecord->id);
+        foreach($invoicesWithTemplate as $invoice) {
+            $invoice->reapplyTemplate();
+        }
     }
 
     public function deleteTemplate(TemplateModel $template): bool
@@ -216,22 +226,14 @@ class InvoiceTemplates extends Component
     // =========================================================================
     private function _createTwigTemplate(string $handle, string $content): bool
     {
-        $templatePath = Craft::getAlias('@nethaven/invoiced/templates/_invoice-templates/' . $handle . '.twig');
-
-        if(file_put_contents($templatePath, $content)) {
-            return true;
-        }
+        if(file_put_contents($this->getTwigPath($handle), $content)) return true;
         
         return false;
     }
 
     private function _deleteTwigTemplate($handle)
     {
-        $templatePath = Craft::getAlias('@nethaven/invoiced/templates/_invoice-templates/' . $handle . '.twig');
-
-        if(unlink($templatePath)) {
-            return true;
-        }
+        if(unlink($this->getTwigPath($handle))) return true;
         
         return false;
     }
@@ -241,6 +243,7 @@ class InvoiceTemplates extends Component
             $templates = [];
 
             foreach ($this->_createTemplatesQuery()->all() as $result) {
+                $result['twigPath'] = 'invoiced/_invoice-templates/' . $result['handle'] . '.twig';
                 $templates[] = new TemplateModel($result);
             }
 

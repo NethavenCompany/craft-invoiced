@@ -12,7 +12,7 @@ class InvoiceTemplate extends BaseTemplate
 
     public ?string $html = null;
     public ?string $css = null;
-
+    public ?string $twigPath = null;
 
     // Public Methods
     // =========================================================================

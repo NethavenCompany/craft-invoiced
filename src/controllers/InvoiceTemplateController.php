@@ -37,7 +37,7 @@ class InvoiceTemplateController extends Controller
             Craft::$app->getSession()->setError('Could not save the template.');
         }
         
-        return $this->redirect('invoiced/settings/invoice-templates');
+        return $this->redirect($template->getCpEditUrl());
     }
 
     public function actionDelete(): Response
