@@ -6,7 +6,7 @@ use Craft;
 use craft\db\Migration;
 use nethaven\invoiced\base\Table;
 
-class m241205_100000_create_invoiced_invoices_table extends Migration
+class m241226_100000_create_invoiced_invoices_table extends Migration
 {
     public function safeUp()
     {
@@ -16,17 +16,15 @@ class m241205_100000_create_invoiced_invoices_table extends Migration
             'invoiceNumber' => $this->string()->notNull(),
             'invoiceDate' => $this->date()->notNull(),
             'expirationDate' => $this->date()->notNull(),
-            'qty' => $this->integer()->notNull(),
-            'description' => $this->string()->notNull(),
-            'unitPrice' => $this->decimal(10, 2)->notNull(),
-            'subtotal' => $this->decimal(10, 2)->notNull(),
-            'vat' => $this->decimal(10, 2)->notNull(),
-            'total' => $this->decimal(10, 2)->notNull(),
+
+            'items' => $this->text(),
+            'subtotal' => $this->decimal(10, 2),
+            'vat' => $this->decimal(10, 2),
+            'total' => $this->decimal(10, 2),
             'phone' => $this->string(),
             'email' => $this->string(),
-            'address' => $this->text(),
-            'cocnumber' => $this->string(),
-            'vatnumber' => $this->string(),
+            'pdf' => $this->string(),
+
             'uid' => $this->uid(),
             'dateCreated' => $this->dateTime()->notNull(),
             'dateUpdated' => $this->dateTime()->notNull(),
@@ -42,6 +40,16 @@ class m241205_100000_create_invoiced_invoices_table extends Migration
             Table::INVOICES,
             'templateId',
             '{{%invoiced_invoicetemplates}}',
+            'id',
+            'CASCADE',
+            null
+        );
+
+        $this->addForeignKey(
+            null,
+            Table::INVOICES,
+            'id',
+            '{{%elements}}',
             'id',
             'CASCADE',
             'CASCADE'
