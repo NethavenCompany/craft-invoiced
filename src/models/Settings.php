@@ -10,6 +10,9 @@ class Settings extends Model
 
     public string $pluginName = 'Invoiced';
     public string $defaultInvoiceTemplate = '';
+    public string $phoneFieldDefault = '';
+    public string $emailFieldDefault = '';
+    public int $vatFieldDefault = 0;
 
 
     // Public Methods

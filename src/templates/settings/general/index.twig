@@ -8,11 +8,10 @@
     { label: 'General', url: url('invoiced/settings/general') },
 ] %}
 
-{% set templates = craft.invoiced.getInvoiceTemplates() %}
 {% set pluginSettings = craft.invoiced.getPluginSettings() %}
 {% set templateOptions = [] %}
 
-{% for template in templates %}
+{% for template in craft.invoiced.getInvoiceTemplates() %}
     {% set templateOptions = templateOptions|merge([{ label: template.name, value: template.id }]) %}
 {% endfor %}
 
@@ -26,6 +25,7 @@
 		{{ csrfInput() }}
 
 		{% namespace 'settings' %}
+
 		{% if templateOptions|length %}
 			{{ forms.selectField({
                 first: true,
@@ -45,9 +45,47 @@
             </div>
         </div>
 		{% endif %}
-		{% endnamespace %}
 
 		<hr>
+
+        <h2>Default Invoice Values</h2>
+        <div class="instructions">
+			<p>These values will be used as a default when creating a new invoice.</p>
+        </div>
+
+        <div class="field">
+            <div class="heading">
+                <label>VAT</label>
+            </div>
+            {{ forms.text({
+                type: 'number',
+                max: 100,
+                name: 'vatFieldDefault',
+                value: pluginSettings.vatFieldDefault
+            }) }}
+        </div>
+
+        <div class="field">
+            <div class="heading">
+                <label>Phone</label>
+            </div>
+            {{ forms.text({
+                name: 'phoneFieldDefault',
+                value: pluginSettings.phoneFieldDefault
+            }) }}
+        </div>
+
+        <div class="field">
+            <div class="heading">
+                <label>Email</label>
+            </div>
+            {{ forms.text({
+                name: 'emailFieldDefault',
+                value: pluginSettings.emailFieldDefault
+            }) }}
+        </div>
+
+		{% endnamespace %}
 
 		<input type="submit" class="btn submit" value="{{ 'Save' }}">
 	</form>
