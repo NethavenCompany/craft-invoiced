@@ -26,8 +26,17 @@
 ] %}
 
 
-{% set monacoOptions = {
-    language: 'html',
+{% set htmlOptions = {
+    language: 'twig',
+    theme: 'vs-dark',
+    lineNumbers: 'on',
+    lineNumbersMinChars: 4,
+    lineDecorationsWidth: 6,
+    folding: true,
+} %}
+
+{% set cssOptions = {
+    language: 'css',
     theme: 'vs-dark',
     lineNumbers: 'on',
     lineNumbersMinChars: 4,
@@ -77,16 +86,32 @@
             </div>
 
             <div class="field">
-                <div class="input ltr">
+                <div class="heading">
+                    <label>
+                        Template
+                        <span class="visually-hidden">Required</span>
+                        <span class="required" aria-hidden="true"></span>
+                    </label>
+                </div>
+                <div class="instructions">
+                    <p>Fill in your HTML on the left and CSS on the right</p>
+                </div>
+                <div class="input ltr field-row">
                     {{ codeEditor.textareaField({
-                        label: "Template",
-                        instructions: "Enter your HTML here.",
                         id: 'templateHtml',
                         name: 'templateHtml',
                         value: template.html ?? '<style>\n</style>\n<body>\n</body>',
                         rows: 15,
                         required: true
-                    }, 'CodeField', monacoOptions, codeEditorOptions) }}
+                    }, 'CodeField', htmlOptions, codeEditorOptions) }}
+
+                    {{ codeEditor.textareaField({
+                        id: 'templateCss',
+                        name: 'templateCss',
+                        value: template.css ?? '',
+                        rows: 15,
+                        required: true
+                    }, 'CodeField', cssOptions, codeEditorOptions) }}
                 </div>
             </div>
 
