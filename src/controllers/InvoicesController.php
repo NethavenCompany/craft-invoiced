@@ -21,43 +21,16 @@ class InvoicesController extends Controller
         return $this->renderTemplate('invoiced/invoices/index', []);
     }
 
+    public function actionEdit(): Response
+    {
+        return $this->redirect('invoiced/invoices');
+    }
+
     public function actionSave(): Response
     {
         $this->requirePostRequest();
 
-        $request = Craft::$app->getRequest();
-
-        $invoice = new Invoice();
-        $invoice->templateId = $request->getParam("templateId");
-
-        if (!Invoiced::$plugin->getInvoiceTemplates()->getTemplateById($invoice->templateId))
-        {
-            Craft::$app->getSession()->setError('Invalid template ID.');
-            return $this->goBack();
-        }
-
-        $invoice->invoiceNumber = $request->getParam("invoiceNumber");
-        $invoice->invoiceDate = $request->getParam("invoiceDate")["date"];
-        $invoice->expirationDate = $request->getParam("expirationDate")["date"];
-
-        if (is_array($request->getParam("items"))) {
-            $invoice->items = $request->getParam("items");
-        } else {
-            $invoice->items = [];
-        }
-
-        foreach ($invoice->items as $item) {
-            $qty = json_decode($item[0]);
-            $unitPrice = json_decode($item[1]);
-            $invoice->subTotal += ($qty * $unitPrice);
-        }
-        
-        $invoice->vat = $request->getParam("vat");
-        $invoice->vatAmount = $invoice->subTotal * ($invoice->vat / 100);
-        $invoice->total = $invoice->subTotal + $invoice->vatAmount;
-
-        $invoice->phone = $request->getParam("phone");
-        $invoice->email = $request->getParam("email");
+        $invoice = $this->_buildInvoice();
         
         if (Craft::$app->getElements()->saveElement($invoice)) {
             Craft::$app->getSession()->setSuccess('Invoice saved');
@@ -68,41 +41,53 @@ class InvoicesController extends Controller
         return $this->redirect('invoiced/invoices');
     }
 
-    public function actionPreview()
+    public function actionPreview(): Response
     {
         $this->requireAcceptsJson();
 
-        $invoice = new Invoice();
-        $invoice->templateId = $this->request->getRequiredParam("templateId");
+        $invoice = $this->_buildInvoice();
         $template = Invoiced::$plugin->getInvoiceTemplates()->getTemplateById($invoice->templateId);
-
-        $invoice->invoiceNumber = $this->request->getParam("invoiceNumber");
-        $invoice->invoiceDate = $this->request->getParam("invoiceDate");
-        $invoice->expirationDate = $this->request->getParam("expirationDate");
-
-        $itemsParam = $this->request->getParam("items");
-
-        if (is_array($itemsParam)) {
-            $invoice->items = $itemsParam;
-        } else {
-            $invoice->items = json_decode($itemsParam);
-        }
-
-        foreach ($invoice->items as $item) {
-            $qty = json_decode($item[0]) ?? 0;
-            $unitPrice = json_decode($item[1]) ?? 0;
-            $invoice->subTotal += ($qty * $unitPrice);
-        }
-        
-        $invoice->vat = $this->request->getParam("vat");
-        $invoice->total = $invoice->subTotal * (1 + ($invoice->vat / 100));
-
-        $invoice->phone = $this->request->getParam("phone");
-        $invoice->email = $this->request->getParam("email");
 
         return $this->asJson([
             'html' => $invoice->getPdfHtml(false),
             'css' => $template->css
         ]);
+    }
+
+    private function _buildInvoice(): Invoice
+    {
+        $invoice = new Invoice();
+        $invoice->templateId = $this->request->getRequiredParam("templateId");
+
+        $invoice->invoiceNumber = $this->request->getParam("invoiceNumber");
+        $invoice->invoiceDate = $this->request->getParam("invoiceDate")["date"] ?? $this->request->getParam("invoiceDate");
+        $invoice->expirationDate = $this->request->getParam("expirationDate")["date"] ?? $this->request->getParam("expirationDate");
+
+        $itemsParam = $this->request->getParam("items");
+
+        if (is_array($itemsParam)) {
+            $invoice->items = $itemsParam;
+        } else if (is_string($itemsParam)) {
+            $invoice->items = json_decode($itemsParam);
+        } else {
+            $invoice->items = [];
+        }
+
+        if($invoice->items) {
+            foreach ($invoice->items as $item) {
+                $qty = json_decode($item[0]) ?? 0;
+                $unitPrice = json_decode($item[1]) ?? 0;
+                $invoice->subTotal += ($qty * $unitPrice);
+            }
+        }
+        
+        $invoice->vat = $this->request->getParam("vat");
+        $invoice->vatAmount = round($invoice->subTotal * ($invoice->vat / 100), 2);
+        $invoice->total = round($invoice->subTotal + $invoice->vatAmount, 2);
+
+        $invoice->phone = $this->request->getParam("phone");
+        $invoice->email = $this->request->getParam("email");
+
+        return $invoice;
     }
 }
