@@ -13,16 +13,41 @@ use nethaven\invoiced\models\InvoiceTemplate as InvoiceTemplateModel;
 class Invoiced
 {
     /**
-     * @return array
+     * Returns all available invoice templates.
+     * @return array An array of all available invoice templates.
      */
     public function getInvoiceTemplates(): array
     {
         return InvoicedPlugin::$plugin->getInvoiceTemplates()->getAllTemplates();
     }
 
+    /**
+     * Returns an invoice template by its ID.
+     * @param int $id The ID of the invoice template to retrieve.
+     * @return InvoiceTemplateModel The invoice template model instance.
+     */
     public function getInvoiceTemplateById(int $id): InvoiceTemplateModel
     {
         return InvoicedPlugin::$plugin->getInvoiceTemplates()->getTemplateById($id);
+    }
+
+    /**
+     * Get invoice by ID.
+     * @param int $id
+     * @return Invoice|null
+     */
+    public function getInvoiceById(int $id): ?Invoice
+    {
+        return InvoicedPlugin::$plugin->getInvoices()->getInvoiceById($id);
+    }
+
+    /**
+     * Get all invoices.
+     * @return array
+     */
+    public function getInvoices(): array
+    {
+        return InvoicedPlugin::$plugin->getInvoices()->getInvoices();
     }
 
     /**

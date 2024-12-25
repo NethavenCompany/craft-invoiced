@@ -15,7 +15,7 @@ class Invoices extends Component
     // Public Methods
     // =========================================================================
 
-    public function getAllInvoices(): array
+    public function getInvoices(): array
     {
         return Invoice::find()->all();
     }
@@ -25,7 +25,7 @@ class Invoices extends Component
         return Invoice::find()->where(['templateId' => $templateId])->all();
     }
 
-    public function getInvoicesById($id): ?Invoice
+    public function getInvoiceById($id): ?Invoice
     {
         return Invoice::find()->id($id)->one();
     }
@@ -36,11 +36,5 @@ class Invoices extends Component
         $highestInvoiceNumber = Invoice::find()->trashed(null)->where(['like', 'invoiceNumber', $currentYear . '%', false])->orderBy(['invoiceNumber' => SORT_DESC])->one();
         $newInvoiceNumber = $highestInvoiceNumber ? (int)substr($highestInvoiceNumber->invoiceNumber, 4) + 1 : 1;
         return $currentYear . sprintf('%04d', $newInvoiceNumber);
-    }
-
-    public function createPdfBlob($pdfOutput)
-    {
-        $pdfBase64 = base64_encode($pdfOutput);
-        return "data:application/pdf;base64," . $pdfBase64;
     }
 }
