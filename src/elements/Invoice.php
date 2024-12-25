@@ -34,10 +34,10 @@ class Invoice extends Element
 
     public mixed $items = [];
 
-    public ?int $subTotal = 0;
     public ?int $vat = 0;
-    public ?int $vatAmount = 0;
-    public ?int $total = 0;
+    public ?float $subTotal = 0.00;
+    public ?float $vatAmount = 0.00;
+    public ?float $total = 0.00;
     public ?string $phone = '';
     public ?string $email = '';
 
@@ -173,7 +173,6 @@ class Invoice extends Element
             'invoiceNumber',
             'invoiceDate',
             'expirationDate',
-            'subTotal',
             'total',
         ];
     }
@@ -253,7 +252,7 @@ class Invoice extends Element
 
     protected function cpEditUrl(): ?string
     {
-        return sprintf('invoices/edit/%s', $this->getCanonicalId());
+        return sprintf('/admin/invoiced/invoices/edit/%s', $this->getCanonicalId());
     }
 
     public function getPostEditUrl(): ?string
