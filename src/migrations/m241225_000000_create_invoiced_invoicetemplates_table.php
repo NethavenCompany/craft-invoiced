@@ -12,12 +12,7 @@ use nethaven\invoiced\models\InvoiceTemplate;
 
 class m241225_000000_create_invoiced_invoicetemplates_table extends Migration
 {
-    public $exampleTemplateHtml = '{% if invoice.items is string %}
-        {% set items = invoice.items|json_decode %}
-    {% else %}
-        {% set items = invoice.items %}
-    {% endif %}
-
+    public $exampleTemplateHtml = '
     <html>
     <body>
         <ul class="details">
@@ -34,10 +29,10 @@ class m241225_000000_create_invoiced_invoicetemplates_table extends Migration
             <li>BANKUK2U</li>
             <li class="heading">Contact</li>
             <li>
-                <a href="mailto:{{ invoice.email }}">{{ invoice.email }}
+                <a href="mailto:{{ invoice.email }}">{{ invoice.email }}</a>
             </li>
             <li>
-                <a href="tel:{{ invoice.phone }}">{{ invoice.phone }}
+                <a href="tel:{{ invoice.phone }}">{{ invoice.phone }}</a>
             </li>
         </ul>
 
