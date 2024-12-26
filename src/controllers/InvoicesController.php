@@ -23,6 +23,19 @@ class InvoicesController extends Controller
 
     public function actionEdit(): Response
     {
+        $this->requirePostRequest();
+
+        $id = $this->request->getRequiredParam("elementId");
+
+        $invoice = Invoiced::$plugin->getInvoices()->getInvoiceById($id);
+        $invoice = $this->_buildInvoice($invoice);
+
+        if (Craft::$app->getElements()->saveElement($invoice)) {
+            Craft::$app->getSession()->setSuccess('Invoice saved');
+        } else {
+            Craft::$app->getSession()->setError('Could not save invoice.');
+        }
+        
         return $this->redirect('invoiced/invoices');
     }
 
@@ -67,9 +80,10 @@ class InvoicesController extends Controller
         return $this->asJson(false);
     }
 
-    private function _buildInvoice(): Invoice
+    private function _buildInvoice($invoice = null): Invoice
     {
-        $invoice = new Invoice();
+        if(!$invoice) $invoice = new Invoice();
+
         $invoice->templateId = $this->request->getRequiredParam("templateId");
 
         $invoice->invoiceNumber = $this->request->getParam("invoiceNumber");
