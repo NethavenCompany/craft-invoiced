@@ -85,13 +85,13 @@ class InvoicesController extends Controller
         if(!$invoice) $invoice = new Invoice();
 
         $invoice->templateId = $this->request->getRequiredParam("templateId");
-
+        
         $invoice->invoiceNumber = $this->request->getParam("invoiceNumber");
         $invoice->invoiceDate = $this->request->getParam("invoiceDate")["date"] ?? $this->request->getParam("invoiceDate");
         $invoice->expirationDate = $this->request->getParam("expirationDate")["date"] ?? $this->request->getParam("expirationDate");
-
+        
         $itemsParam = $this->request->getParam("items");
-
+        
         if (is_array($itemsParam)) {
             $invoice->items = $itemsParam;
         } else if (is_string($itemsParam)) {
@@ -99,8 +99,11 @@ class InvoicesController extends Controller
         } else {
             $invoice->items = [];
         }
-
+        
         if($invoice->items) {
+            // set subTotal to zero incase this is not a new invoice.
+            $invoice->subTotal = 0.00;
+
             foreach ($invoice->items as $item) {
                 $qty = json_decode($item[0]) ?? 0;
                 $unitPrice = json_decode($item[1]) ?? 0;
