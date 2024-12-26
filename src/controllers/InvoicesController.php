@@ -13,8 +13,14 @@ use yii\web\Response;
  */
 class InvoicesController extends Controller
 {
+    // Properties
+    // =========================================================================
+
     protected array|int|bool $allowAnonymous = self::ALLOW_ANONYMOUS_NEVER;
 
+
+    // Public Methods
+    // =========================================================================
 
     public function actionIndex(): Response
     {
@@ -80,6 +86,10 @@ class InvoicesController extends Controller
         return $this->asJson(false);
     }
 
+
+    // Private Methods
+    // =========================================================================
+
     private function _buildInvoice($invoice = null): Invoice
     {
         if(!$invoice) $invoice = new Invoice();
@@ -96,19 +106,27 @@ class InvoicesController extends Controller
             $invoice->items = $itemsParam;
         } else if (is_string($itemsParam)) {
             $invoice->items = json_decode($itemsParam);
-        } else {
-            $invoice->items = [];
         }
         
         if($invoice->items) {
             // set subTotal to zero incase this is not a new invoice.
             $invoice->subTotal = 0.00;
+            $cleanItemArray = [];
 
-            foreach ($invoice->items as $item) {
-                $qty = json_decode($item[0]) ?? 0;
-                $unitPrice = json_decode($item[1]) ?? 0;
+            foreach ($invoice->items as $row => $value) {
+                $qty = (int) json_decode($value[0]) ?? 0;
+                $unitPrice = (float) json_decode($value[1]) ?? 0;
+                $description = $value[2];
+
+                if($qty <= 0 || $qty === '') continue;
+                if($unitPrice === '') continue;
+                
                 $invoice->subTotal += ($qty * $unitPrice);
+
+                $cleanItemArray[$row] = [$qty, $unitPrice, $description];
             }
+
+            $invoice->items = $cleanItemArray;
         }
         
         $invoice->vat = $this->request->getParam("vat");
