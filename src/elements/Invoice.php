@@ -4,20 +4,15 @@ namespace nethaven\invoiced\elements;
 
 use Craft;
 use craft\base\Element;
+use craft\elements\actions\Restore;
 use craft\elements\User;
-use craft\elements\conditions\ElementConditionInterface;
 use craft\elements\db\ElementQueryInterface;
 use craft\helpers\Db;
 use craft\helpers\UrlHelper;
-use craft\web\CpScreenResponseBehavior;
 use Dompdf\Dompdf;
-use Exception;
 use nethaven\invoiced\base\Table;
-use nethaven\invoiced\elements\conditions\InvoiceCondition;
 use nethaven\invoiced\elements\db\InvoiceQuery;
 use nethaven\invoiced\Invoiced;
-use nethaven\invoiced\records\Invoice as InvoiceRecord;
-use yii\web\Response;
 
 /**
  * Invoice element type
@@ -101,8 +96,16 @@ class Invoice extends Element
 
     protected static function defineActions(string $source): array
     {
-        // List any bulk element actions here
-        return [];
+        $actions = parent::defineActions($source);
+
+        $actions[] = Craft::$app->getElements()->createAction([
+            'type' => Restore::class,
+            'successMessage' => Craft::t('invoiced', 'Elements restored.'),
+            'partialSuccessMessage' => Craft::t('invoiced', 'Some elements restored.'),
+            'failMessage' => Craft::t('invoiced', 'Elements not restored.'),
+        ]);
+    
+        return $actions;
     }
 
     protected static function includeSetStatusAction(): bool
