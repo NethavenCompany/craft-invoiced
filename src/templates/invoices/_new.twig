@@ -6,7 +6,8 @@
 
 {% set crumbs = [
     { label: craft.invoiced.getPluginName() | t('invoiced'), url: url('invoiced') },
-    { label: 'Invoiced' | t('invoiced'), url: url('invoiced/invoices') },
+    { label: 'Invoices' | t('invoiced'), url: url('invoiced/invoices') },
+    { label: 'Create Invoice' | t('invoiced'), url: url('invoiced/invoices/new') },
 ] %}
 
 {% set title = '' %}
@@ -96,6 +97,7 @@
                 {{ forms.text({
                     name: 'phone',
                     id: 'phone',
+                    type: 'phone',
                     value: pluginSettings.phoneFieldDefault
                 }) }}
             </div>
@@ -110,6 +112,7 @@
                 {{ forms.text({
                     name: 'email',
                     id: 'email',
+                    type: 'email',
                     value: pluginSettings.emailFieldDefault
                 }) }}
             </div>
@@ -146,11 +149,7 @@
                         { type: 'number', min: 0, step: 0.01, value: 0, heading: 'Unit Price' },
                         { type: 'singleline', heading: 'Description' },
                     ],
-                    rows: [
-                        [11, 15, "Webdevelopment"],
-                        [6, 17.50, "Branding"],
-                        [28, 14.50, "Design"],
-                    ]
+                    rows: []
                 }) }}
             </div>
 

@@ -1,8 +1,4 @@
 class InvoicePreview {
-    /**
-     * Initializes the InvoicePreview class.
-     * This constructor sets up the fields, style tag, and registers field listeners.
-     */
     constructor() {
         this.fields = {
             invoiceNumber: document.getElementById('invoiceNumber'),
@@ -16,37 +12,63 @@ class InvoicePreview {
         }
         
         this.styleTag = document.createElement('style');
+        this.previewContainer = document.querySelector("#invoice-preview");
 
         document.head.appendChild(this.styleTag);
 
         this.init();
     }
 
-    /**
-     * Initializes the InvoicePreview instance.
-     * Registers field listeners and updates the preview.
-     */
     init() {
         this._registerFieldListeners();
-
         this.update();
     }
 
     // Helper Methods
-    // ========================================
+    // =========================================================================
+    
     /**
      * Registers a listener for a given field based on its type.
      * @param {Element} field - The field element to register a listener for.
      * @param {Function} callback - The callback function to execute when the field changes.
      */
     fieldListenerHelper(field, callback) {
-        if(field.type === "number") field.addEventListener("change", callback);
-        if(field.type === "text") {
-            field.addEventListener("input", callback);
-            field.addEventListener("blur", callback);
+        if(field === this.fields.items) {
+            field.addEventListener('click', (tableEvent) => {
+                if(tableEvent.target.getAttribute("invoiceListener")) return;
+                tableEvent.target.addEventListener("input", (e) => callback(e));
+                tableEvent.target.setAttribute("invoiceListener", true);
+            })
+
+            this.editableTableToArray().forEach((value, index) => {
+                const row = index;
+                const cols = [
+                    document.querySelector(`textarea[name='items[${row}][0]']`),
+                    document.querySelector(`textarea[name='items[${row}][1]']`),
+                    document.querySelector(`textarea[name='items[${row}][2]']`)
+                ]
+
+                cols.forEach((col, i) => {
+                    col.dataset.value = value[i];
+                    col.addEventListener("input", (e) => callback(e));
+                    col.setAttribute("invoiceListener", true);
+                });
+            })
+
+            return;
         }
-        if(field.tagName === "TEXTAREA") field.addEventListener("input", callback);
-        if(field.tagName === "SELECT") field.addEventListener("change", callback);
+
+        
+        if(field.type === "number") {
+            field.addEventListener("input", (e) => callback(e));
+            field.addEventListener("change", (e) => callback(e));
+        }
+        if(field.type === "text") {
+            field.addEventListener("input", (e) => callback(e));
+            field.addEventListener("blur", (e) => callback(e));
+        }
+        if(field.tagName === "TEXTAREA") field.addEventListener("input", (e) => callback(e));
+        if(field.tagName === "SELECT") field.addEventListener("change", (e) => callback(e));
     }
 
     /**
@@ -105,45 +127,60 @@ class InvoicePreview {
     }
 
 
-    // Public Methods
-    // ========================================
+    // Methods
+    // =========================================================================
 
     /**
      * Updates the invoice preview based on the current field values.
      */
-    update() {
-        const element = document.querySelector("#invoice-preview");
+    async update(e) {
+        const view = await this.getView();
+        this.updateView(view);
+        this.editStatus(e);
+    }
 
-        fetch(this.getPreviewControllerUrl(), {
+    async getView() {
+        return fetch(this.getPreviewControllerUrl(), {
             method: 'GET',
-            headers: {
-                'Accept': 'application/json',
-            }
+            headers: { 'Accept': 'application/json' }
         })
         .then(response => response.json())
-        .then(data => {
-            element.innerHTML = data.html;
-            this.styleTag.innerHTML = this.cleanCss(data.css);
-        })
+        .then(data => { return data; })
         .catch(error => {
             console.error('Error fetching invoice preview:', error);
         });
     }
+    
+    updateView(view) {
+        this.previewContainer.innerHTML = view.html;
+        this.styleTag.innerHTML = this.cleanCss(view.css);
+    }
 
+    editStatus(event) {
+        if(!event) return;
+
+        const value = event.target.value;
+        const valueInDb = event.target.dataset.value;
+        
+        if(!value || !valueInDb) return;
+        
+        if(value !== valueInDb) {
+            console.log(value, valueInDb)
+            event.target.classList.add("-edited")
+        } else {
+            event.target.classList.remove("-edited")
+        }
+    }
 
     // Setup Methods
-    // ========================================
+    // =========================================================================
 
     /**
-     * Registers listeners for all fields and their child elements.
+     * Registers update listeners for all fields.
      */
     _registerFieldListeners() {
         Object.values(this.fields).forEach(field => {
-            this.fieldListenerHelper(field, () => this.update())
-
-            if(field.tagName === "TABLE") field.addEventListener('click', (tableEvent) => {
-                this.fieldListenerHelper(tableEvent.target, () => this.update())
-            })
+            this.fieldListenerHelper(field, (e) => this.update(e))
         })
     }
 }

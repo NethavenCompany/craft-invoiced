@@ -30,6 +30,11 @@ class Invoices extends Component
         return Invoice::find()->id($id)->one();
     }
 
+    public function getInvoiceByNumber($number): ?Invoice
+    {
+        return Invoice::find()->where(['invoiceNumber' => $number])->one();
+    }
+
     public function newInvoiceNumber()
     {
         $currentYear = date('Y');

@@ -130,9 +130,11 @@ class Invoiced extends Plugin
 
                 $event->rules['invoiced/invoices'] = [ 'template' => 'invoiced/invoices'];
                 $event->rules['invoiced/invoices/new'] = [ 'template' => 'invoiced/invoices/_new'];
-                $event->rules['invoiced/invoices/edit/<elementId:\\d+>'] = 'invoiced/invoices/_edit';
+                $event->rules['invoiced/invoices/edit/<elementId:\d+>'] = [ 'template' => 'invoiced/invoices/_edit'];
                 $event->rules['invoiced/invoices/save'] = 'invoiced/invoices/save';
+                $event->rules['invoiced/invoices/edit'] = 'invoiced/invoices/edit';
                 $event->rules['invoiced/invoices/preview'] = 'invoiced/invoices/preview';
+                $event->rules['invoiced/invoices/validate'] = 'invoiced/invoices/validate';
 
                 $event->rules['invoiced/settings/invoice-templates/new'] = [ 'template' => 'invoiced/settings/invoice-templates/_edit'];
                 $event->rules['invoiced/settings/invoice-templates/edit/<id:\d+>'] = [ 'template' => 'invoiced/settings/invoice-templates/_edit'];

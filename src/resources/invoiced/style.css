@@ -14,3 +14,25 @@
         gap: 1rem;
     }
 }
+
+.text, textarea {
+    transition: border 400ms !important;
+
+    &.-error {
+        border-left: 4px solid rgb(209, 74, 74);
+    }
+
+    &.-edited {
+        transition: border 400ms !important;
+        border-left: 4px solid rgb(209, 162, 74) !important;
+    }
+}
+
+.btn.submit:disabled {
+    opacity: 0.6 !important;
+    cursor: default;
+}
+
+.invoiced-form-error {
+    color: rgb(209, 74, 74);
+}

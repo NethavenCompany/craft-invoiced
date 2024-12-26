@@ -54,6 +54,19 @@ class InvoicesController extends Controller
         ]);
     }
 
+    public function actionValidate(): Response
+    {
+        $this->requireAcceptsJson();
+
+        $numberTaken = Invoiced::$plugin->getInvoices()->getInvoiceByNumber($this->request->getParam("invoiceNumber"));
+
+        if($numberTaken) {
+            return $this->asJson(true);
+        }
+
+        return $this->asJson(false);
+    }
+
     private function _buildInvoice(): Invoice
     {
         $invoice = new Invoice();

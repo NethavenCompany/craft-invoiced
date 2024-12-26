@@ -1,15 +1,185 @@
-{% extends 'invoiced/_layouts/elementindex' %}
-{% set title = craft.invoiced.getPluginName() %}
+{% extends 'invoiced/_layouts/index' %}
+
+{% import '_includes/forms' as forms %}
+
+{# {% do view.registerAssetBundle("nethaven\\invoiced\\resources\\InvoicedAssets") %} #}
+{% do view.registerAssetBundle("nethaven\\invoiced\\resources\\InvoiceAssets") %}
+
+{% set title = '' %}
+{% set selectedSubnavItem = 'invoices' %}
+{% set elementId = craft.app.request.segment(4) %}
+{% set invoice = craft.invoiced.getInvoiceById(elementId) %}
+{% set pluginSettings = craft.invoiced.getPluginSettings() %}
+{% set templateOptions = [] %}
+
+{% for template in craft.invoiced.getInvoiceTemplates() %}
+    {% set templateOptions = templateOptions|merge([{ label: template.name, value: template.id }]) %}
+{% endfor %}
 
 {% set crumbs = [
-    { label: craft.invoiced.getPluginName(), url: url('invoiced') },
-    { label: 'Invoices', url: url('invoiced/invoices') },
-    { label: 'New Invoice', url: url('invoiced/invoices/new') },
+    { label: pluginSettings.pluginName | t('invoiced'), url: url('invoiced') },
+    { label: 'Invoices' | t('invoiced'), url: url('invoiced/invoices') },
+    { label: 'Edit Invoice ' ~ invoice.invoiceNumber | t('invoiced'), url: url(craft.app.request.url) },
 ] %}
 
-{% set elementType = 'nethaven\\invoiced\\elements\\Invoice' %}
-
 {% block content %}
+    <div id="invoice-editor">
+        <form method="post" action="{{ url('invoiced/invoices/edit') }}">
+            {{ csrfInput() }}
+            {{ redirectInput('invoiced/invoices/edit/{id}') }}
+            {{ hiddenInput("elementId", elementId) }}
 
+            <div class="field">
+                <div class="heading">
+                    <label for="templateId">
+                        Invoice Template
+                    </label>
+                </div>
+
+                {{ forms.selectField({
+                    first: true,
+                    name: 'templateId',
+                    id: 'templateId',
+                    options: templateOptions,
+                    value: invoice.templateId,
+                    inputAttributes: {
+                        'data-value': invoice.templateId
+                    }
+                }) }}
+            </div>
+            
+            <div class="field">
+                <div class="heading">
+                    <label for="invoiceNumber">
+                        Invoice Number
+                        <span class="visually-hidden">Required</span>
+                        <span class="required" aria-hidden="true"></span>
+                    </label>
+                </div>
+                {{ forms.text({
+                    type: 'number',
+                    name: 'invoiceNumber',
+                    id: 'invoiceNumber',
+                    value: invoice.invoiceNumber,
+                    autofocus: true,
+                    required: true,
+                    inputAttributes: {
+                        'data-value': invoice.invoiceNumber
+                    }
+                }) }}
+            </div>
+
+            <span class="field-row -flex">
+                <div class="field">
+                    <div class="heading">
+                        <label for="invoiceDate">
+                            Invoice Date
+                        </label>
+                    </div>
+                    {{ forms.date({
+                        name: 'invoiceDate',
+                        id: 'invoiceDate',
+                        value: invoice.invoiceDate,
+                        inputAttributes: {
+                            'data-value': invoice.invoiceDate
+                        }
+                    }) }}
+                </div>
+                <div class="field">
+                    <div class="heading">
+                        <label for="expirationDate">
+                            Expiration Date
+                        </label>
+                    </div>
+                    {{ forms.date({
+                        name: 'expirationDate',
+                        id: 'expirationDate',
+                        value: invoice.expirationDate,
+                        inputAttributes: {
+                            'data-value': invoice.expirationDate
+                        }
+                    }) }}
+                </div>
+            </span>
+
+            <div class="field">
+                <div class="heading">
+                    <label for="phone">
+                        Phone number
+                    </label>
+                </div>
+
+                {{ forms.text({
+                    name: 'phone',
+                    id: 'phone',
+                    value: invoice.phone,
+                    inputAttributes: {
+                        'data-value': invoice.phone
+                    }
+                }) }}
+            </div>
+
+            <div class="field">
+                <div class="heading">
+                    <label for="email">
+                        Email
+                    </label>
+                </div>
+
+                {{ forms.text({
+                    name: 'email',
+                    id: 'email',
+                    value: invoice.email,
+                    inputAttributes: {
+                        'data-value': invoice.email
+                    }
+                }) }}
+            </div>
+
+            <div class="field">
+                <div class="heading">
+                    <label for="vat">
+                        VAT
+                    </label>
+                </div>
+
+                {{ forms.text({
+                    name: 'vat',
+                    id: 'vat',
+                    type: 'number',
+                    value: invoice.vat,
+                    inputAttributes: {
+                        'data-value': invoice.vat
+                    }
+                }) }}
+            </div>
+
+            <div class="field">
+                <div class="heading">
+                    <label for="items">
+                        Items
+                    </label>
+                </div>
+
+                {{ forms.editableTable({
+                    id: 'invoice-items',
+                    name: 'items',
+                    allowAdd: true,
+                    allowRemove: true,
+                    cols: [
+                        { type: 'number', min: 1, value: 1, heading: 'Quantity' },
+                        { type: 'number', min: 0, step: 0.01, value: 0, heading: 'Unit Price' },
+                        { type: 'singleline', heading: 'Description' },
+                    ],
+                    rows: invoice.items|json_decode
+                }) }}
+            </div>
+
+            <div class="buttons">
+                <input type="submit" class="btn submit" "Create Invoice">
+            </div>
+        </form>
+        <div id="invoice-preview"></div>
+    </div>
 {% endblock %}
 

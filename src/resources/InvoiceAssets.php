@@ -18,6 +18,7 @@ class InvoiceAssets extends AssetBundle
 
         $this->js = [
             'preview.js',
+            'validate.js',
         ];
 
         $this->css = [
