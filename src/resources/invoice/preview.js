@@ -165,7 +165,6 @@ class InvoicePreview {
         if(!value || !valueInDb) return;
         
         if(value !== valueInDb) {
-            console.log(value, valueInDb)
             event.target.classList.add("-edited")
         } else {
             event.target.classList.remove("-edited")
