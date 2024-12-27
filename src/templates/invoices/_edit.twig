@@ -2,7 +2,6 @@
 
 {% import '_includes/forms' as forms %}
 
-{# {% do view.registerAssetBundle("nethaven\\invoiced\\resources\\InvoicedAssets") %} #}
 {% do view.registerAssetBundle("nethaven\\invoiced\\resources\\InvoiceAssets") %}
 
 {% set title = '' %}
@@ -61,7 +60,6 @@
                     name: 'invoiceNumber',
                     id: 'invoiceNumber',
                     value: invoice.invoiceNumber,
-                    autofocus: true,
                     required: true,
                     inputAttributes: {
                         'data-value': invoice.invoiceNumber

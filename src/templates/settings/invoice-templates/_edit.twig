@@ -1,6 +1,7 @@
-{% import 'codeeditor/codeEditor' as codeEditor %}
-
 {% extends 'invoiced/_layouts/index' %}
+
+{% import 'codeeditor/codeEditor' as codeEditor %}
+{% import '_includes/forms' as forms %}
 
 {% set elementType = 'nethaven\\invoiced\\elements\\InvoiceTemplate' %}
 {% set templateId = craft.app.request.segment(5) %}
