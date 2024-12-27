@@ -233,7 +233,10 @@ class InvoiceTemplates extends Component
 
     private function _deleteTwigTemplate($handle)
     {
-        if(unlink($this->getTwigPath($handle))) return true;
+        $path = $this->getTwigPath($handle);
+
+        if(!file_exists($path)) return false;
+        if(unlink($path)) return true;
         
         return false;
     }

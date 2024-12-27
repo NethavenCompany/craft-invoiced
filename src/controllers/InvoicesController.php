@@ -50,6 +50,11 @@ class InvoicesController extends Controller
         $this->requirePostRequest();
 
         $invoice = $this->_buildInvoice();
+
+        if (!$invoice->validate()) {
+            Craft::$app->session->setError('Failed to save invoice. Missing required fields.');
+            return null;
+        }
         
         if (Craft::$app->getElements()->saveElement($invoice)) {
             Craft::$app->getSession()->setSuccess('Invoice saved');
@@ -95,7 +100,6 @@ class InvoicesController extends Controller
         if(!$invoice) $invoice = new Invoice();
 
         $invoice->templateId = $this->request->getRequiredParam("templateId");
-        
         $invoice->invoiceNumber = $this->request->getParam("invoiceNumber");
         $invoice->invoiceDate = $this->request->getParam("invoiceDate")["date"] ?? $this->request->getParam("invoiceDate");
         $invoice->expirationDate = $this->request->getParam("expirationDate")["date"] ?? $this->request->getParam("expirationDate");
@@ -114,8 +118,8 @@ class InvoicesController extends Controller
             $cleanItemArray = [];
 
             foreach ($invoice->items as $row => $value) {
-                $qty = (int) json_decode($value[0]) ?? 0;
-                $unitPrice = (float) json_decode($value[1]) ?? 0;
+                $qty = (float) json_decode($value[0]) ?? 0;
+                $unitPrice = (float) json_decode($value[1]) ?? 0.00;
                 $description = $value[2];
 
                 if($qty <= 0 || $qty === '') continue;
