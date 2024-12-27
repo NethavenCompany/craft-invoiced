@@ -10,9 +10,11 @@ use craft\elements\db\ElementQueryInterface;
 use craft\helpers\Db;
 use craft\helpers\UrlHelper;
 use Dompdf\Dompdf;
+use Exception;
 use nethaven\invoiced\base\Table;
 use nethaven\invoiced\elements\db\InvoiceQuery;
 use nethaven\invoiced\Invoiced;
+use nethaven\invoiced\records\Invoice as InvoiceRecord;
 
 /**
  * Invoice element type
@@ -117,6 +119,12 @@ class Invoice extends Element
     {
         return [
             [
+                'label' => Craft::t('app', 'Invoice Date'),
+                'orderBy' => 'invoiced_invoices.invoiceDate',
+                'attribute' => 'invoiceDate',
+                'defaultDir' => 'desc',
+            ],
+            [
                 'label' => Craft::t('app', 'Invoice Number'),
                 'orderBy' => 'invoiced_invoices.invoiceNumber',
                 'attribute' => 'invoiceNumber',
@@ -172,8 +180,8 @@ class Invoice extends Element
     protected static function defineDefaultTableAttributes(string $source): array
     {
         return [
-            'pdf',
             'invoiceNumber',
+            'pdf',
             'invoiceDate',
             'expirationDate',
             'total',
@@ -250,7 +258,7 @@ class Invoice extends Element
 
     public function canCreateDrafts(User $user): bool
     {
-        return true;
+        return false;
     }
 
     protected function cpEditUrl(): ?string
@@ -329,32 +337,40 @@ class Invoice extends Element
 
     private function _removePdf()
     {
-        if(unlink($this->getPdfPath())) {
-            return true;
-        }
+        $path = $this->getPdfPath();
+
+        if(!file_exists($path)) return false;
+        if(unlink($this->getPdfPath())) return true;
         
         return false;
     }
 
     public function afterSave(bool $isNew): void
     {
-        if (!$this->propagating) {
-            Db::upsert(Table::INVOICES, [
-                'id' => $this->id,
-                'templateId' => $this->templateId,
-            ], [
-                'invoiceNumber' => $this->invoiceNumber,
-                'invoiceDate' => date('Y-m-d', strtotime($this->invoiceDate)),
-                'expirationDate' => date('Y-m-d', strtotime($this->expirationDate)),
-                'items' => json_encode($this->items) ?? '[]',
-                'subTotal' => $this->subTotal,
-                'vat' => $this->vat,
-                'total' => $this->total,
-                'phone' => $this->phone,
-                'email' => $this->email,
-                'pdf' => $this->getPdfUrl(),
-            ]);
+        if (!$isNew) {
+            $record = InvoiceRecord::findOne($this->id);
+
+            if (!$record) {
+                throw new Exception("Invalid form ID: $this->id");
+            }
+        } else {
+            $record = new InvoiceRecord();
+            $record->id = $this->id;
         }
+
+        $record->templateId = $this->templateId;
+        $record->invoiceNumber = $this->invoiceNumber;
+        $record->invoiceDate = date('Y-m-d', strtotime($this->invoiceDate));
+        $record->expirationDate = date('Y-m-d', strtotime($this->expirationDate));
+        $record->items = json_encode($this->items) ?? '[]';
+        $record->subtotal = $this->subTotal;
+        $record->vat = $this->vat;
+        $record->total = $this->total;
+        $record->phone = $this->phone;
+        $record->email = $this->email;
+        $record->pdf = $this->getPdfUrl();
+
+        $record->save(false);
 
         $this->_createPdf();
 
