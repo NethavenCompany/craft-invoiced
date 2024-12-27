@@ -6,7 +6,7 @@ use Craft;
 use craft\db\Migration;
 use nethaven\invoiced\base\Table;
 
-class m241226_100000_create_invoiced_invoices_table extends Migration
+class m241229_100000_create_invoiced_invoices_table extends Migration
 {
     public function safeUp()
     {
@@ -52,7 +52,7 @@ class m241226_100000_create_invoiced_invoices_table extends Migration
             '{{%elements}}',
             'id',
             'CASCADE',
-            'CASCADE'
+            null
         );
     }
 
