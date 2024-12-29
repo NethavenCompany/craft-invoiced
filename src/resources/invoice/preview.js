@@ -159,15 +159,16 @@ class InvoicePreview {
     editStatus(event) {
         if(!event) return;
 
-        const value = event.target.value;
-        const valueInDb = event.target.dataset.value;
+        const target = event.target;
+        const value = target.value;
+        const valueInDb = target.dataset.value;
         
         if(!value || !valueInDb) return;
         
         if(value !== valueInDb) {
-            event.target.classList.add("-edited")
+            target.classList.add("-edited")
         } else {
-            event.target.classList.remove("-edited")
+            target.classList.remove("-edited")
         }
     }
 

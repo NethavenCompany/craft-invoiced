@@ -10,8 +10,15 @@
 
     &.-flex {
         display: flex;
-        align-items: center;
-        gap: 1rem;
+        gap: 2rem;
+    }
+
+    &.-flex > * {
+        width: 50%;
+    }
+
+    &.flex > *:not(:first-of-type) {
+        margin-left: auto;
     }
 }
 
@@ -36,4 +43,12 @@
 
 .invoiced-form-error {
     color: rgb(209, 74, 74);
+    width: 100%;
+    top: 100%;
+    margin: 0;
+    margin-top: 0.5rem;
+
+    &.-hidden {
+        height: 0;
+    }
 }

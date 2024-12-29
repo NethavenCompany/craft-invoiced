@@ -1,8 +1,28 @@
 class InvoiceValidate {
     constructor() {
-        this.fields = {
-            invoiceNumber: document.getElementById('invoiceNumber'),
-        }
+        this.fields = [
+            {
+                key: "invoiceNumber",
+                id: "invoiceNumber",
+                element: document.getElementById('invoiceNumber'),
+                errorContainer: null,
+                insert: { parent: false, position: "afterend" },
+            },
+            {
+                key: "invoiceDate",
+                id: "invoiceDate-date",
+                element: document.getElementById('invoiceDate-date'),
+                errorContainer: null,
+                insert: { parent: true, position: "afterend" },
+            },
+            {
+                key: "expirationDate",
+                id: "expirationDate-date",
+                element: document.getElementById('expirationDate-date'),
+                errorContainer: null,
+                insert: { parent: true, position: "afterend" },
+            },
+        ];
 
         this.init();
     }
@@ -15,8 +35,23 @@ class InvoiceValidate {
     // Methods
     // =========================================================================
 
+    getValidationUrl() {
+        let url = "/admin/invoiced/invoices/validate?";
+
+        this.fields.forEach((field, i) => {
+            url += `${field.key}=${field.element.value}`;
+            if(i < this.fields.length - 1) url += "&";
+        })
+
+        return url;
+    }
+
+    getField(target) {
+        return this.fields.filter(field => field.element === target)[0];
+    }
+
     async validate() {
-        return fetch(`/admin/invoiced/invoices/validate?invoiceNumber=${this.fields.invoiceNumber.value}`, {
+        return fetch(this.getValidationUrl(), {
             method: 'GET',
             headers: { 'Accept': 'application/json' }
         })
@@ -28,40 +63,57 @@ class InvoiceValidate {
     }
 
     async errorStatus(target) {
-        if(!target) return;
-        if(target !== this.fields.invoiceNumber) return;
+        const field = this.getField(target);
 
-        const invoiceNumberTaken = await this.validate();
-        const errorContainer = document.querySelector(`#${target.id} + .invoiced-form-error`);
+        if(!field) return;
+        if(target.value === target.dataset.value) return;
+        
+        const errorContainer = this.getField(target).errorContainer;
         const submitButton = document.querySelector(`form input[type='submit']`);
-
-        if(!invoiceNumberTaken || target.value === target.dataset.value) {
+        const validation = await this.validate();
+        
+        if(target.classList.contains("-error")) {            
             target.classList.remove("-error");
+            errorContainer.classList.add("-hidden");
             errorContainer.innerHTML = ""
             submitButton.disabled = false;
-        } else {
-            target.classList.add("-error");
-            errorContainer.innerHTML = "Invoice number already taken"
-            submitButton.disabled = true;
         }
+        
+        if(validation.success) return;
+        
+        validation.errors.forEach(error => {
+            if(target.id !== error.id) return;
+            if(target.value === target.dataset.value) return;
+
+            target.classList.add("-error");
+            errorContainer.classList.remove("-hidden")
+            errorContainer.innerHTML = error.message;
+            submitButton.disabled = true;
+        })
     }
 
     // Setup Methods
     // =========================================================================
 
     _setErrorContainers() {
-        Object.values(this.fields).forEach(field => {
+        this.fields.forEach(field => {
             const container = document.createElement("p");
-            container.className = "invoiced-form-error"
+            container.className = "invoiced-form-error -hidden"
+            
+            if(field.insert.parent) {
+                field.element.parentElement.parentElement.insertAdjacentElement(field.insert.position, container);
+            } else {
+                field.element.insertAdjacentElement(field.insert.position, container);
+            }
 
-            field.parentElement.appendChild(container);
+            field.errorContainer = container;
         })
     }
 
     _registerFieldListeners() { 
-        Object.values(this.fields).forEach(field => {
-            field.addEventListener('change', (e) => this.errorStatus(e.target));
-            field.addEventListener('input', (e) => this.errorStatus(e.target));
+        this.fields.forEach(field => {
+            field.element.addEventListener('change', (e) => this.errorStatus(e.target));
+            field.element.addEventListener('input', (e) => this.errorStatus(e.target));
         })
     }
 }

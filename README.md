@@ -1,6 +1,11 @@
-# Invoice Manager
+<h1 style="text-align: center;">Invoiced</h1>
 
-A extension to the cms to create invoices from html templates and turn them into pdf files for your clients
+<img src="src/icon.svg" alt="Icon Mask" width="60" style="display: block; margin: auto;">
+
+<hr>
+
+A extension to your craft cms to create and manage invoices manually.
+You can give your invoices custom styling using HTML templates.
 
 ## Requirements
 
@@ -12,7 +17,7 @@ You can install this plugin from the Plugin Store or with Composer.
 
 #### From the Plugin Store
 
-Go to the Plugin Store in your project’s Control Panel and search for “Invoice Manager”. Then press “Install”.
+Go to the Plugin Store in your project’s Control Panel and search for “Invoiced”. Then press “Install”.
 
 #### With Composer
 
@@ -23,7 +28,7 @@ Open your terminal and run the following commands:
 cd /path/to/my-project.test
 
 # tell Composer to load the plugin
-composer require nethaven/craft-invoiced
+composer require nethaven/invoiced
 
 # tell Craft to install the plugin
 ./craft plugin/install invoiced

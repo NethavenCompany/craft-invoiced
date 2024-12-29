@@ -181,10 +181,10 @@ class Invoice extends Element
     {
         return [
             'invoiceNumber',
-            'pdf',
             'invoiceDate',
             'expirationDate',
             'total',
+            'pdf',
         ];
     }
 

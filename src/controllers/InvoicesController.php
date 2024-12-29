@@ -4,6 +4,7 @@ namespace nethaven\invoiced\controllers;
 
 use Craft;
 use craft\web\Controller;
+use DateTime;
 use nethaven\invoiced\elements\Invoice;
 use nethaven\invoiced\Invoiced;
 use yii\web\Response;
@@ -81,14 +82,56 @@ class InvoicesController extends Controller
     public function actionValidate(): Response
     {
         $this->requireAcceptsJson();
-
-        $numberTaken = Invoiced::$plugin->getInvoices()->getInvoiceByNumber($this->request->getParam("invoiceNumber"));
-
-        if($numberTaken) {
-            return $this->asJson(true);
+        
+        $errors = [];
+        $invoiceNumber = $this->request->getParam("invoiceNumber");
+        $invoiceDate = $this->request->getParam("invoiceDate");
+        $expirationDate = $this->request->getParam("expirationDate");
+    
+        // Check if the invoice number already exists
+        $numberTaken = Invoiced::$plugin->getInvoices()->getInvoiceByNumber($invoiceNumber);
+        
+        if ($numberTaken) {
+            $errors[] = [
+                'id' => 'invoiceNumber',
+                'message' => Craft::t('invoiced', 'Invoice number is already taken.'),
+                'status' => 'error'
+            ];
         }
+    
+        // Validate expiration date is greater than invoice date
+        if ($invoiceDate && $expirationDate) {
+            $invoiceDateTime = new DateTime($invoiceDate);
+            $expirationDateTime = new DateTime($expirationDate);
+    
+            if ($expirationDateTime <= $invoiceDateTime) {
+                $errors[] = [
+                    'id' => 'expirationDate-date',
+                    'message' => Craft::t('invoiced', 'Expiration date must be after the invoice date.'),
+                ];
+            }
 
-        return $this->asJson(false);
+            if ($invoiceDateTime >= $expirationDateTime) {
+                $errors[] = [
+                    'id' => 'invoiceDate-date',
+                    'message' => Craft::t('invoiced', 'Invoice date must be before the expiration date.'),
+                ];
+            }
+        }
+    
+        // Return errors if any exist
+        if (!empty($errors)) {
+            return $this->asJson([
+                'success' => false,
+                'errors' => $errors
+            ]);
+        }
+    
+        // If no errors, return success
+        return $this->asJson([
+            'success' => true,
+            'message' => Craft::t('invoiced', 'Validation passed.')
+        ]);
     }
 
 
