@@ -226,7 +226,14 @@ class InvoiceTemplates extends Component
     // =========================================================================
     private function _createTwigTemplate(string $handle, string $content): bool
     {
-        if(file_put_contents($this->getTwigPath($handle), $content)) return true;
+        $twigPath = $this->getTwigPath($handle);
+        $directory = dirname($twigPath);
+        
+        if (!file_exists($directory)) {
+            mkdir($directory, 0777, true);
+        }
+
+        if(file_put_contents($twigPath, $content)) return true;
         
         return false;
     }
