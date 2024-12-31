@@ -69,6 +69,7 @@ class InvoiceQuery extends ElementQuery
             
             'invoiced_invoices.subTotal',
             'invoiced_invoices.vat',
+            'invoiced_invoices.vatAmount',
             'invoiced_invoices.total',
             'invoiced_invoices.phone',
             'invoiced_invoices.email',

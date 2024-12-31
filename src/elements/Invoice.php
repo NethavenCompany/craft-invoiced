@@ -365,6 +365,7 @@ class Invoice extends Element
         $record->items = json_encode($this->items) ?? '[]';
         $record->subtotal = $this->subTotal;
         $record->vat = $this->vat;
+        $record->vatAmount = $this->vatAmount;
         $record->total = $this->total;
         $record->phone = $this->phone;
         $record->email = $this->email;

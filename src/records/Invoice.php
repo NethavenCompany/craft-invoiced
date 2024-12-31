@@ -18,6 +18,7 @@ use nethaven\invoiced\base\Table;
  * @property array $items Items
  * @property string $subtotal Subtotal
  * @property string $vat Vat
+ * @property string $vatAmount VatAmount
  * @property string $total Total
  * @property string|null $phone Phone
  * @property string|null $email Email

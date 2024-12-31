@@ -20,6 +20,7 @@ class m241229_100000_create_invoiced_invoices_table extends Migration
             'items' => $this->text(),
             'subtotal' => $this->decimal(10, 2),
             'vat' => $this->decimal(10, 2),
+            'vatAmount' => $this->decimal(10, 2),
             'total' => $this->decimal(10, 2),
             'phone' => $this->string(),
             'email' => $this->string(),
