@@ -19,7 +19,7 @@ class InvoiceQuery extends ElementQuery
     public mixed $invoiceDate = null;
     public mixed $expirationDate = null;
 
-    protected array $defaultOrderBy = ['elements.dateCreated' => SORT_DESC];
+    protected array $defaultOrderBy = ['invoiced_invoices.invoiceNumber' => SORT_DESC];
 
 
     // Public Methods
