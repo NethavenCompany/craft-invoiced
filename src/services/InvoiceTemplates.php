@@ -8,10 +8,12 @@ use craft\base\MemoizableArray;
 use craft\db\Query;
 use craft\events\ConfigEvent;
 use craft\helpers\Db;
+use craft\helpers\Queue;
 use craft\helpers\StringHelper;
 use nethaven\invoiced\base\Table;
 use nethaven\invoiced\events\InvoiceTemplateEvent;
 use nethaven\invoiced\Invoiced;
+use nethaven\invoiced\jobs\ReapplyTemplate;
 use nethaven\invoiced\models\InvoiceTemplate as TemplateModel;
 use nethaven\invoiced\records\InvoiceTemplate as TemplateRecord;
 use Throwable;
@@ -148,10 +150,9 @@ class InvoiceTemplates extends Component
             ]));
         }
 
-        $invoicesWithTemplate = Invoiced::$plugin->getInvoices()->getInvoicesByTemplate($templateRecord->id);
-        foreach($invoicesWithTemplate as $invoice) {
-            $invoice->reapplyTemplate();
-        }
+        Queue::push(new ReapplyTemplate([
+            'templateId' => $templateRecord->id
+        ]));
     }
 
     public function deleteTemplate(TemplateModel $template): bool
