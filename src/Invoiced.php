@@ -8,6 +8,11 @@ use nethaven\invoiced\elements\Invoice;
 use nethaven\invoiced\models\Settings;
 use nethaven\invoiced\services\InvoiceTemplates as TemplatesService;
 use nethaven\invoiced\services\Invoices as InvoicesService;
+use nethaven\invoiced\autocompletes\TemplateHtmlAutocomplete;
+use nethaven\invoiced\autocompletes\TemplateCssAutocomplete;
+
+use nystudio107\codeeditor\events\RegisterCodeEditorAutocompletesEvent;
+use nystudio107\codeeditor\services\AutocompleteService;
 
 use Craft;
 use craft\base\Event as Event;
@@ -20,6 +25,7 @@ use craft\services\Elements;
 use craft\services\ProjectConfig;
 use craft\web\UrlManager;
 use yii\base\Event as EventAlias;
+
 
 
 class Invoiced extends Plugin
@@ -65,6 +71,7 @@ class Invoiced extends Plugin
 
             if (Craft::$app->getRequest()->getIsCpRequest()) {
                 $this->_registerCpRoutes();
+                $this->_reigsterAutoCompletes();
             }
         });
         
@@ -140,6 +147,17 @@ class Invoiced extends Plugin
                 $event->rules['invoiced/settings/invoice-templates/edit/<id:\d+>'] = [ 'template' => 'invoiced/settings/invoice-templates/_edit'];
 
                 $event->rules['invoiced/invoice-templates/save'] = 'invoiced/invoice-template/save';
+            }
+        );
+    }
+
+    private function _reigsterAutoCompletes() {
+        Event::on(
+            AutocompleteService::class,
+            AutocompleteService::EVENT_REGISTER_CODEEDITOR_AUTOCOMPLETES,
+            function (RegisterCodeEditorAutocompletesEvent $event) {   
+                $event->types[] = TemplateHtmlAutocomplete::class;
+                $event->types[] = TemplateCssAutocomplete::class;
             }
         );
     }
