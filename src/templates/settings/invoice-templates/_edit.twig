@@ -3,6 +3,8 @@
 {% import 'codeeditor/codeEditor' as codeEditor %}
 {% import '_includes/forms' as forms %}
 
+{% do view.registerAssetBundle("nethaven\\invoiced\\resources\\InvoiceTemplateAssets") %}
+
 {% set elementType = 'nethaven\\invoiced\\elements\\InvoiceTemplate' %}
 {% set templateId = craft.app.request.segment(5) %}
 
@@ -46,7 +48,7 @@
 } %}
 
 {% set codeEditorOptions = {
-    wrapperClass: 'monaco-editor-background-frame'
+    wrapperClass: 'monaco-editor-background-frame',
 } %}
 
 {% block content %}
@@ -97,12 +99,16 @@
                 <div class="instructions">
                     <p>Fill in your HTML on the left and CSS on the right</p>
                 </div>
-                <div class="input ltr field-row">
+                <span class="flex-row">
+                    <button class="invoice-template-nav-button html" type="button">Html</button>
+                    <button class="invoice-template-nav-button css" type="button">Css</button>
+                </span>
+                <div class="input ltr single-field-row">
                     {{ codeEditor.textareaField({
                         id: 'templateHtml',
                         name: 'templateHtml',
-                        value: template.html ?? '<style>\n</style>\n<body>\n</body>',
-                        rows: 15,
+                        value: template.html ?? '<html>\n<body>\n</body>\n</html>',
+                        rows: 25,
                         required: true
                     }, 'CodeField', htmlOptions, codeEditorOptions) }}
 
@@ -110,7 +116,7 @@
                         id: 'templateCss',
                         name: 'templateCss',
                         value: template.css ?? '',
-                        rows: 15,
+                        rows: 25,
                         required: true
                     }, 'CodeField', cssOptions, codeEditorOptions) }}
                 </div>

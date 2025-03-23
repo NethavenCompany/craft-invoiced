@@ -1,0 +1,60 @@
+.field {
+    overflow: hidden;
+}
+
+.single-field-row {
+    width: 100%;
+    display:grid;
+    grid-template-columns:100% 100%;
+    transition: 200ms ease-out;
+}
+
+.invoice-template-nav-button {
+    background: #1e1e1e;
+    padding: 0.3rem 0.6rem;
+    color: rgb(220, 220, 220);
+    border-radius: 3px;
+    margin-top: 0.2rem;
+    transform: translateY(1px) translateX(1px);
+    z-index: 999;
+
+    transition: 200ms ease-out;
+    width: 7rem;
+    opacity: 0.55;
+    
+    &.html {
+        border-bottom-left-radius: 0px;
+        border-top-right-radius: 0px;
+        border-bottom-right-radius: 0px;
+    }
+    
+    &.css {
+        border-top-left-radius: 0px;
+        border-bottom-left-radius: 0px;
+        border-bottom-right-radius: 0px;
+    }
+
+    &.selected { 
+        opacity: 1;
+    }
+}
+
+#templateHtml-field, #templateCss-field {
+    border-top-left-radius: 0px !important;
+    
+    & * {
+        border-top-left-radius: 0px !important;
+    }
+
+    .monaco-editor {
+        outline: 1px #1e1e1e !important;
+    }
+
+    .monaco-editor-background-frame {
+        margin-top: 0 !important;
+    }
+}
+
+#templateCss-field {
+    margin: 0 !important;
+}

@@ -52,3 +52,8 @@
         height: 0;
     }
 }
+
+.flex-row {
+    display: flex;
+    flex-direction: row;
+}

@@ -1,23 +1,37 @@
 #invoice-editor {
-    display: grid;
+    display: flex;
     gap: 2rem;
-
-    grid-template-columns: 1fr 1fr 1fr;
-
-    form {
-        grid-column: span 1;
-    }  
 }
 
 #invoice-preview {
-    grid-column: span 2;
+    margin-left: auto;
     border: 1px solid rgba(96,125,159,.25);
     aspect-ratio: 1/1.414;
     background: #fff;
     position: relative;
-    width: 100%;
+    transform-origin: top right;
 
     tr, th {
         width: 10rem !important;
     }
+
+    /* @media (max-width: 200px) {
+        font-size: 11px;
+    }
+
+    @media (min-width: 201px) and (max-width: 400px) {
+        font-size: 14px;
+    }
+
+    @media (min-width: 401px) and (max-width: 600px) {
+        font-size: 17px;
+    }
+
+    @media (min-width: 601px) and (max-width: 800px) {
+        font-size: 20px;
+    }
+
+    @media (min-width: 801px) and (max-width: 1000px) {
+        font-size: 22px;
+    } */
 }

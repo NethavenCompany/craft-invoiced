@@ -20,6 +20,7 @@ class InvoicePreview {
     }
 
     init() {
+        this._registerResizeListener();
         this._registerFieldListeners();
         this.update();
     }
@@ -102,7 +103,10 @@ class InvoicePreview {
     cleanCss(css) {
         css = css.replace("body", "&")
         css = css.replace("html", "&")
+        // css = css.replaceAll(/font-size:.*?;?/g, "")
         css = `#invoice-preview { ${css} }`
+
+        console.log(css)
 
         return css;
     }
@@ -182,6 +186,16 @@ class InvoicePreview {
         Object.values(this.fields).forEach(field => {
             this.fieldListenerHelper(field, (e) => this.update(e))
         })
+    }
+
+    _registerResizeListener() {
+        const invoicePreview = this.previewContainer;
+        
+        window.addEventListener('resize', () => {
+            let scale = Math.max(Math.min(window.innerWidth / invoicePreview.offsetWidth, window.innerHeight / invoicePreview.offsetHeight));
+            scale = Math.min(scale, 0.8);
+            invoicePreview.style.transform = `scale(${scale})`;
+        });
     }
 }
 
