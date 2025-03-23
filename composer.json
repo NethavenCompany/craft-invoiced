@@ -1,6 +1,6 @@
 {
     "name": "nethaven/invoiced",
-    "version": "1.0.0",
+    "version": "2.0.0",
     "description": "Easily manually create and manage invoices for your business",
     "type": "craft-plugin",
     "keywords": [
@@ -13,10 +13,10 @@
     "license": "proprietary",
     "support": {
         "email": "support@nethaven.nl",
-        "issues": "https://github.com/NethavenCompany/invoiced/issues?state=open",
-        "source": "https://github.com/NethavenCompany/invoiced",
-        "docs": "https://github.com/NethavenCompany/invoiced",
-        "rss": "https://github.com/NethavenCompany/invoiced/releases.atom"
+        "issues": "https://github.com/NethavenCompany/craft-invoiced/issues?state=open",
+        "source": "https://github.com/NethavenCompany/craft-invoiced",
+        "docs": "https://github.com/NethavenCompany/craft-invoiced",
+        "rss": "https://github.com/NethavenCompany/craft-invoiced/releases.atom"
     },
     "authors": [
         {
@@ -26,7 +26,7 @@
     ],
     "require": {
         "php": "8.2",
-        "craftcms/cms": "^4.4.0",
+        "craftcms/cms": "^5.0.0",
         "dompdf/dompdf": "^3.0"
     },
     "require-dev": {
@@ -42,7 +42,7 @@
         "handle": "invoiced",
         "name": "Invoiced",
         "developer": "Nethaven",
-        "documentationUrl": "https://github.com/NethavenCompany/invoiced",
+        "documentationUrl": "https://github.com/NethavenCompany/craft-invoiced",
         "class": "nethaven\\invoiced\\Invoiced"
     },
     "scripts": {
