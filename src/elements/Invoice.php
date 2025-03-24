@@ -150,15 +150,14 @@ class Invoice extends Element
         ];
     }
 
-    protected function tableAttributeHtml(string $attribute): string
+    public function attributeHtml(string $attribute): string
     {
         if ($attribute === 'pdf') {
-            return '<a href="' . $this->getPdfUrl() . '" target="_blank">' . 'See PDF' . '</a>';
+            return '<a href="' . $this->getPdfUrl() . '" target="_blank">See PDF</a>';
         }
-
-        return parent::tableAttributeHtml($attribute);
-    }
-
+    
+        return parent::attributeHtml($attribute);
+    }    
 
     protected static function defineTableAttributes(): array
     {
