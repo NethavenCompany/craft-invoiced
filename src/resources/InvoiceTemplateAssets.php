@@ -18,7 +18,7 @@ class InvoiceTemplateAssets extends AssetBundle
         ];
 
         $this->js = [
-            'template.js'
+            'editor.js'
         ];
 
         $this->css = [

@@ -198,5 +198,3 @@ class InvoicePreview {
         });
     }
 }
-
-new InvoicePreview();
