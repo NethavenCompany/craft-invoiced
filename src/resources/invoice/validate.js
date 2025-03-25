@@ -117,5 +117,3 @@ class InvoiceValidate {
         })
     }
 }
-
-new InvoiceValidate();

@@ -62,31 +62,28 @@
                 <input type="hidden" name="sortOrder" value="{{ template.sortOrder }}">
             {% endif %}
             
-            <div class="field">
-                <div class="heading">
-                    <label for="name">
-                        Template Name
-                        <span class="visually-hidden">Required</span>
-                        <span class="required" aria-hidden="true"></span>
-                    </label>
-                </div>
-                <div class="input ltr">
-                    <input type="text" id="name" name="name" value="{{ template.name ?? '' }}" class="text fullwidth" required>
-                </div>
-            </div>
+            {{ forms.textField({
+                label: "Name"|t('app'),
+                id: 'name',
+                name: 'name',
+                value: template.name ?? '',
+                required: true,
+                autofocus: true
+            }) }}
 
-            <div class="field">
-                <div class="heading">
-                    <label for="handle">
-                        Template Handle
-                        <span class="visually-hidden">Required</span>
-                        <span class="required" aria-hidden="true"></span>
-                    </label>
-                </div>
-                <div class="input ltr">
-                    <input type="text" id="handle" name="handle" value="{{ template.handle ?? '' }}" class="text fullwidth" onfocus="this.setAttribute('data-original', this.value);" onblur="if (this.value == '') { this.value = this.getAttribute('data-original'); }" required>
-                </div>
-            </div>
+            {{ forms.textField({
+                label: "Handle"|t('app'),
+                id: 'handle',
+                name: 'handle',
+                value: template.handle ?? '',
+                class: 'code',
+                readonly: false,
+                maxlength: 255,
+                required: true,
+                data: {
+                    suggestHandle: '#name'
+                }
+            }) }}
 
             <div class="field">
                 <div class="heading">
@@ -128,3 +125,9 @@
         </form>
     </div>
 {% endblock %}
+
+{% js %}
+    new Craft.HandleGenerator('#name', '#handle');
+
+    new Editor();
+{% endjs %}
